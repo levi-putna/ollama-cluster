@@ -1,0 +1,15 @@
+[package]
+name = "ocluster-admin"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Web admin panel for Ollama Cluster"
+
+[dependencies]
+anyhow = { workspace = true }
+axum = { workspace = true }
+mime_guess = "2"
+reqwest = { workspace = true }
+rust-embed = "8"
+tokio = { workspace = true }
+tracing = { workspace = true }

@@ -1,0 +1,51 @@
+version = 999
+
+[inference]
+listen = ""
+
+[management]
+listen = "127.0.0.1:11600"
+
+[metrics]
+listen = "127.0.0.1:11601"
+
+[database]
+path = "~/.local/share/ocluster/ocluster.db"
+
+[routing]
+policy = "least_active_requests"
+loaded_model_preference = true
+max_retries = 2
+no_node_behaviour = "reject"
+queue_depth = 32
+queue_timeout_ms = 60000
+
+[health]
+failure_threshold = 0
+recovery_backoff_ms = 1000
+recovery_max_backoff_ms = 60000
+recovery_success_threshold = 2
+idle_check_interval_ms = 60000
+
+[proxy]
+request_body_buffer_bytes = 0
+upstream_timeout_ms = 300000
+max_idle_connections = 32
+
+[discovery]
+interval_ms = 300000
+timeout_ms = 10000
+
+[logging]
+level = "info"
+format = "text"
+
+[[nodes]]
+name = "dup"
+url = "not-valid"
+model_mode = "discover"
+
+[[nodes]]
+name = "dup"
+url = "http://10.0.0.3:11434"
+model_mode = "discover"

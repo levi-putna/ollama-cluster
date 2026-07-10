@@ -1,0 +1,68 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/ocluster-core",
+    "crates/ocluster-config",
+    "crates/ocluster-protocol",
+    "crates/ocluster-storage",
+    "crates/ocluster-client",
+    "crates/ocluster-controller",
+    "crates/ocluster",
+    "crates/ocluster-tui",
+    "crates/ocluster-admin",
+    "crates/ocluster-agent",
+    "crates/mock-ollama",
+    "crates/test-harness",
+]
+default-members = ["crates/ocluster"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["Ollama Cluster Contributors"]
+rust-version = "1.88"
+
+[workspace.dependencies]
+anyhow = "1"
+async-trait = "0.1"
+axum = { version = "0.7", features = ["macros"] }
+bytes = "1"
+chrono = { version = "0.4", features = ["serde"] }
+clap = { version = "4", features = ["derive", "env"] }
+futures = "0.3"
+hyper = { version = "1", features = ["client", "http1", "server"] }
+hyper-util = { version = "0.1", features = ["client", "client-legacy", "http1", "server", "tokio"] }
+http-body-util = "0.1"
+metrics = "0.23"
+metrics-exporter-prometheus = "0.15"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "stream"] }
+rusqlite = { version = "0.32", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+sha2 = "0.10"
+thiserror = "1"
+tokio = { version = "1", features = ["full"] }
+tokio-stream = "0.1"
+toml = "0.8"
+tower = "0.5"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+url = "2"
+
+ratatui = "0.29"
+crossterm = "0.28"
+
+ocluster-core = { path = "crates/ocluster-core" }
+ocluster-config = { path = "crates/ocluster-config" }
+ocluster-protocol = { path = "crates/ocluster-protocol" }
+ocluster-storage = { path = "crates/ocluster-storage" }
+ocluster-client = { path = "crates/ocluster-client" }
+ocluster-controller = { path = "crates/ocluster-controller" }
+ocluster-tui = { path = "crates/ocluster-tui" }
+ocluster-admin = { path = "crates/ocluster-admin" }
+mock-ollama = { path = "crates/mock-ollama" }
+test-harness = { path = "crates/test-harness" }

@@ -1,0 +1,33 @@
+[package]
+name = "ocluster"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Ollama Cluster CLI and controller"
+
+[[bin]]
+name = "ocluster"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true }
+ocluster-client = { workspace = true }
+ocluster-config = { workspace = true }
+ocluster-controller = { workspace = true }
+ocluster-core = { workspace = true }
+ocluster-protocol = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+ocluster-tui = { workspace = true }
+ocluster-admin = { workspace = true }
+
+[dev-dependencies]
+mock-ollama = { workspace = true }
+ocluster-client = { workspace = true }
+reqwest = { workspace = true }
+tempfile = "3"
+tokio = { workspace = true }

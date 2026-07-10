@@ -1,0 +1,12 @@
+[package]
+name = "ocluster-protocol"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Management API protocol types for Ollama Cluster"
+
+[dependencies]
+chrono = { workspace = true }
+ocluster-core = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }

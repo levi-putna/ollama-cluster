@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ollama Cluster Admin</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-icon">◉</span>
+        <span class="brand-text">OCluster</span>
+      </div>
+      <nav class="nav">
+        <a href="#/" class="nav-link" data-route="dashboard">Dashboard</a>
+        <a href="#/nodes" class="nav-link" data-route="nodes">Nodes</a>
+        <a href="#/models" class="nav-link" data-route="models">Models</a>
+        <a href="#/events" class="nav-link" data-route="events">Events</a>
+      </nav>
+      <div class="sidebar-footer">
+        <label class="poll-control">
+          <span>Poll interval</span>
+          <select id="poll-interval">
+            <option value="1000">1s</option>
+            <option value="2000" selected>2s</option>
+            <option value="5000">5s</option>
+            <option value="10000">10s</option>
+            <option value="30000">30s</option>
+          </select>
+        </label>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 id="page-title">Dashboard</h1>
+        </div>
+        <div class="topbar-right">
+          <div id="heartbeat" class="heartbeat idle">
+            <span class="heartbeat-dot"></span>
+            <span id="heartbeat-label">Waiting…</span>
+          </div>
+          <button id="refresh-btn" class="btn btn-secondary" type="button">Refresh</button>
+        </div>
+      </header>
+
+      <div id="toast" class="toast hidden"></div>
+      <div id="content" class="content"></div>
+    </main>
+  </div>
+
+  <!-- Modal shell -->
+  <div id="modal-backdrop" class="modal-backdrop hidden">
+    <div id="modal" class="modal" role="dialog"></div>
+  </div>
+
+  <script src="/api.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

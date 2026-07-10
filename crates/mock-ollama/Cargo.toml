@@ -1,0 +1,19 @@
+[package]
+name = "mock-ollama"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Configurable mock Ollama server for tests"
+
+[dependencies]
+axum = { workspace = true }
+bytes = { workspace = true }
+futures = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+tokio-stream = { workspace = true }
+tower = { workspace = true }
+
+[dev-dependencies]
+reqwest = { workspace = true }

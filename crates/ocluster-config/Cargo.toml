@@ -1,0 +1,17 @@
+[package]
+name = "ocluster-config"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Configuration loading and validation for Ollama Cluster"
+
+[dependencies]
+ocluster-core = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+toml = { workspace = true }
+url = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3"

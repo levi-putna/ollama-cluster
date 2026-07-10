@@ -1,0 +1,14 @@
+[package]
+name = "ocluster-client"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Management API client for Ollama Cluster"
+
+[dependencies]
+anyhow = { workspace = true }
+ocluster-protocol = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }

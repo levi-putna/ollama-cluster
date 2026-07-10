@@ -1,0 +1,20 @@
+[Unit]
+Description=Ollama Cluster controller
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ocluster
+Group=ocluster
+ExecStart=/usr/local/bin/ocluster serve --config /etc/ocluster/ocluster.toml
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+
+# Graceful shutdown
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

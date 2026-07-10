@@ -1,0 +1,10 @@
+/target/
+**/*.rs.bk
+*.db
+*.db-*
+.DS_Store
+.idea/
+.vscode/
+.history/
+*.log
+/tmp/

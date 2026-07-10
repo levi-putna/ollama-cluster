@@ -1,0 +1,13 @@
+[package]
+name = "ocluster-agent"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Optional node agent for Ollama Cluster (stub in 0.1.0)"
+
+[[bin]]
+name = "ocluster-agent"
+path = "src/main.rs"
+
+[dependencies]
+clap = { workspace = true }
