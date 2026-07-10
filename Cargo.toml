@@ -19,8 +19,8 @@ default-members = ["crates/ocluster"]
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-license = "MIT"
-authors = ["Ollama Cluster Contributors"]
+license-file = "LICENSE.md"
+authors = ["Levi Putna"]
 rust-version = "1.88"
 
 [workspace.dependencies]

@@ -336,4 +336,11 @@ Client → ocluster proxy (:11434)
 
 ## License
 
-MIT
+Ollama Cluster is **source-available** under a fair-source, two-tier license (similar in spirit to [Remotion](https://www.remotion.dev/docs/license)):
+
+| Tier | Who qualifies | Cost |
+| ---- | ------------- | ---- |
+| **Free License** | Individuals, non-profits, and for-profit organisations with annual gross revenue **≤ AUD $100,000** | Free (commercial use allowed) |
+| **Commercial License** | For-profit organisations above the revenue threshold | [Contact for terms](COMMERCIAL-LICENSE.md) |
+
+The source code is public and [contributions are welcome](CONTRIBUTING.md). See [LICENSE.md](LICENSE.md) for full terms.
