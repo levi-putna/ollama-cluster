@@ -4,6 +4,9 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 description = "Ollama Cluster CLI and controller"
+repository = "https://github.com/levi-putna/ollama-cluster"
+homepage = "https://github.com/levi-putna/ollama-cluster"
+license-file = "../../LICENSE.md"
 
 [[bin]]
 name = "ocluster"

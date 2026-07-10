@@ -3,9 +3,7 @@ use std::path::PathBuf;
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
 use ocluster_client::ManagementClient;
-use ocluster_config::{
-    default_config_path, init_config, load_config, ConfigOverrides,
-};
+use ocluster_config::{default_config_path, init_config, load_config, ConfigOverrides};
 use ocluster_core::ModelMode;
 use ocluster_protocol::AddNodeRequest;
 
@@ -16,7 +14,11 @@ use crate::output::{OutputFormat, OutputWriter};
 #[command(name = "ocluster", version, about)]
 pub struct Cli {
     /// Management API endpoint.
-    #[arg(long, env = "OCLUSTER_MANAGEMENT_URL", default_value = "http://127.0.0.1:11600")]
+    #[arg(
+        long,
+        env = "OCLUSTER_MANAGEMENT_URL",
+        default_value = "http://127.0.0.1:11600"
+    )]
     pub endpoint: String,
 
     /// Path to configuration file.
@@ -123,11 +125,21 @@ pub enum NodeCommands {
         #[arg(long)]
         yes: bool,
     },
-    Enable { name: String },
-    Disable { name: String },
-    Drain { name: String },
-    Inspect { name: String },
-    Probe { name: String },
+    Enable {
+        name: String,
+    },
+    Disable {
+        name: String,
+    },
+    Drain {
+        name: String,
+    },
+    Inspect {
+        name: String,
+    },
+    Probe {
+        name: String,
+    },
     Models {
         #[command(subcommand)]
         command: NodeModelCommands,
@@ -173,46 +185,67 @@ pub async fn execute(cmd: Commands, cli: &Cli) -> Result<()> {
             database_path,
             nodes,
             non_interactive: _,
-        } => cmd_init(path, inference_listen, management_listen, database_path, nodes).await,
+        } => {
+            cmd_init(
+                path,
+                inference_listen,
+                management_listen,
+                database_path,
+                nodes,
+            )
+            .await
+        }
         Commands::Serve => cmd_serve(cli).await,
-        Commands::Status => cmd_with_client(cli, |c, out| async move {
-            let status = c.cluster_status().await?;
-            out.write_cluster_status(&status);
-            Ok(())
-        })
-        .await,
-        Commands::Nodes => cmd_with_client(cli, |c, out| async move {
-            let nodes = c.list_nodes().await?;
-            out.write_nodes(&nodes);
-            Ok(())
-        })
-        .await,
-        Commands::Health => cmd_with_client(cli, |c, out| async move {
-            let nodes = c.list_nodes().await?;
-            out.write_health(&nodes);
-            Ok(())
-        })
-        .await,
-        Commands::Events => cmd_with_client(cli, |c, out| async move {
-            let events = c.list_events().await?;
-            out.write_events(&events);
-            Ok(())
-        })
-        .await,
+        Commands::Status => {
+            cmd_with_client(cli, |c, out| async move {
+                let status = c.cluster_status().await?;
+                out.write_cluster_status(&status);
+                Ok(())
+            })
+            .await
+        }
+        Commands::Nodes => {
+            cmd_with_client(cli, |c, out| async move {
+                let nodes = c.list_nodes().await?;
+                out.write_nodes(&nodes);
+                Ok(())
+            })
+            .await
+        }
+        Commands::Health => {
+            cmd_with_client(cli, |c, out| async move {
+                let nodes = c.list_nodes().await?;
+                out.write_health(&nodes);
+                Ok(())
+            })
+            .await
+        }
+        Commands::Events => {
+            cmd_with_client(cli, |c, out| async move {
+                let events = c.list_events().await?;
+                out.write_events(&events);
+                Ok(())
+            })
+            .await
+        }
         Commands::Node { command } => execute_node(command, cli).await,
         Commands::Model { command } => execute_model(command, cli).await,
-        Commands::Models => cmd_with_client(cli, |c, out| async move {
-            let models = c.list_models().await?;
-            out.write_models(&models);
-            Ok(())
-        })
-        .await,
-        Commands::Explain { model } => cmd_with_client(cli, |c, out| async move {
-            let explain = c.explain_model(&model).await?;
-            out.write_explain(&explain);
-            Ok(())
-        })
-        .await,
+        Commands::Models => {
+            cmd_with_client(cli, |c, out| async move {
+                let models = c.list_models().await?;
+                out.write_models(&models);
+                Ok(())
+            })
+            .await
+        }
+        Commands::Explain { model } => {
+            cmd_with_client(cli, |c, out| async move {
+                let explain = c.explain_model(&model).await?;
+                out.write_explain(&explain);
+                Ok(())
+            })
+            .await
+        }
         Commands::Requests { command } => execute_requests(command, cli).await,
         Commands::Config { command } => execute_config(command, cli).await,
         Commands::Logs { follow } => {
@@ -411,16 +444,14 @@ async fn execute_requests(cmd: Option<RequestCommands>, cli: &Cli) -> Result<()>
             })
             .await
         }
-        Some(RequestCommands::Watch) => {
-            loop {
-                cmd_with_client(cli, |c, out| async move {
-                    out.write_requests(&c.list_requests().await?);
-                    Ok(())
-                })
-                .await?;
-                tokio::time::sleep(std::time::Duration::from_secs(2)).await;
-            }
-        }
+        Some(RequestCommands::Watch) => loop {
+            cmd_with_client(cli, |c, out| async move {
+                out.write_requests(&c.list_requests().await?);
+                Ok(())
+            })
+            .await?;
+            tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+        },
         Some(RequestCommands::Cancel { id }) => {
             cmd_with_client(cli, |c, out| async move {
                 out.write_operation(&c.cancel_request(&id).await?);

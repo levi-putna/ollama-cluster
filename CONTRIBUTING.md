@@ -1,6 +1,6 @@
 # Contributing to Ollama Cluster
 
-Thank you for considering a contribution. Ollama Cluster is source-available under [LICENSE.md](LICENSE.md). We welcome bug fixes, improvements, documentation, and tests from everyone — you do not need a Commercial License to contribute.
+Thank you for considering a contribution. Ollama Cluster is source-available under [LICENSE.md](LICENSE.md). We welcome bug fixes, improvements, documentation, and tests from everyone. You do not need a Commercial License to contribute.
 
 ## Developer Certificate of Origin (DCO)
 
@@ -59,7 +59,7 @@ The `-s` flag adds a `Signed-off-by:` line to your commit message.
 ## Code guidelines
 
 - Match existing code style and conventions in the crate you are editing
-- Keep changes focused — one logical change per pull request where possible
+- Keep changes focused to one logical change per pull request where possible
 - Add or update tests for behaviour changes
 - Update documentation when user-facing behaviour changes
 

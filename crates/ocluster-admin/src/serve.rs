@@ -83,9 +83,9 @@ async fn proxy_api(State(state): State<AdminState>, req: Request) -> Response {
             if let Some(response_headers) = response.headers_mut() {
                 *response_headers = headers;
             }
-            response.body(Body::from(body)).unwrap_or_else(|_| {
-                StatusCode::BAD_GATEWAY.into_response()
-            })
+            response
+                .body(Body::from(body))
+                .unwrap_or_else(|_| StatusCode::BAD_GATEWAY.into_response())
         }
         Err(_) => StatusCode::BAD_GATEWAY.into_response(),
     }

@@ -111,7 +111,8 @@ async fn proxy_inference(State(state): State<ProxyState>, req: Request) -> Respo
     loop {
         let node_name = {
             let mut snap = snapshot.clone();
-            snap.candidates.retain(|c| !tried_nodes.contains(&c.node_name));
+            snap.candidates
+                .retain(|c| !tried_nodes.contains(&c.node_name));
             select_node(&snap)
         };
 
@@ -259,9 +260,9 @@ async fn forward_request(
     let is_stream = content_type.contains("ndjson") || content_type.contains("stream");
 
     if is_stream {
-        let byte_stream = resp.bytes_stream().map(|chunk| {
-            chunk.map_err(std::io::Error::other)
-        });
+        let byte_stream = resp
+            .bytes_stream()
+            .map(|chunk| chunk.map_err(std::io::Error::other));
 
         let mut response_headers = HeaderMap::new();
         response_headers.insert(
@@ -319,7 +320,10 @@ async fn forward_request(
 
 fn extract_model(body: &Bytes) -> Option<String> {
     let value: serde_json::Value = serde_json::from_slice(body).ok()?;
-    value.get("model").and_then(|m| m.as_str()).map(String::from)
+    value
+        .get("model")
+        .and_then(|m| m.as_str())
+        .map(String::from)
 }
 
 fn is_streaming(body: &Bytes) -> bool {

@@ -10,8 +10,8 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilte
 
 use crate::api::{management_router, AppState};
 use crate::discovery::sync_all_nodes;
-use crate::runtime::{ClusterRuntime, SharedRuntime};
 use crate::proxy::ProxyState;
+use crate::runtime::{ClusterRuntime, SharedRuntime};
 
 /// Run the cluster controller (management, proxy, metrics).
 pub async fn run_controller(config: ClusterConfig) -> anyhow::Result<()> {

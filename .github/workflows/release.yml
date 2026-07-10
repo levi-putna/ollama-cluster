@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            archive: ocluster-aarch64-apple-darwin
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            archive: ocluster-x86_64-apple-darwin
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            archive: ocluster-x86_64-unknown-linux-gnu
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-24.04-arm
+            archive: ocluster-aarch64-unknown-linux-gnu
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: "1.88"
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: release-${{ matrix.target }}
+
+      - name: Build release binary
+        run: cargo build --release -p ocluster --target ${{ matrix.target }}
+
+      - name: Package archive
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp "target/${{ matrix.target }}/release/ocluster" dist/
+          tar czf "${{ matrix.archive }}.tar.gz" -C dist ocluster
+          hash=$(openssl dgst -sha256 "${{ matrix.archive }}.tar.gz" | awk '{print $2}')
+          echo "${hash}  ${{ matrix.archive }}.tar.gz" > "${{ matrix.archive }}.tar.gz.sha256"
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: ${{ matrix.archive }}
+          path: |
+            ${{ matrix.archive }}.tar.gz
+            ${{ matrix.archive }}.tar.gz.sha256
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Write combined checksums file
+        run: |
+          cat artifacts/*.tar.gz.sha256 | sort > artifacts/SHA256SUMS
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            artifacts/*.tar.gz
+            artifacts/*.tar.gz.sha256
+            artifacts/SHA256SUMS

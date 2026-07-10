@@ -1,6 +1,6 @@
 # Commercial License
 
-A Commercial License is required for for-profit organisations that do not qualify for the [Free License](LICENSE.md) — typically those with **annual gross revenue above AUD $100,000**.
+A Commercial License is required for for-profit organisations that do not qualify for the [Free License](LICENSE.md), typically those with **annual gross revenue above AUD $100,000**.
 
 ## What you get
 

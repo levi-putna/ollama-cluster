@@ -1,4 +1,4 @@
-# Ollama Cluster — Functional Requirements
+# Ollama Cluster: Functional Requirements
 
 ## 1. Purpose
 
@@ -47,11 +47,11 @@ A model is an Ollama model that may be available on one or more nodes.
 
 The system must distinguish between:
 
-- **installed** — the model exists on the node;
-- **permitted** — the cluster configuration allows the model to be used;
-- **available** — the model is installed, permitted and the node is ready;
-- **loaded** — the model is currently loaded into memory;
-- **unavailable** — the model cannot currently receive requests on the node.
+- **installed**: the model exists on the node;
+- **permitted**: the cluster configuration allows the model to be used;
+- **available**: the model is installed, permitted and the node is ready;
+- **loaded**: the model is currently loaded into memory;
+- **unavailable**: the model cannot currently receive requests on the node.
 
 ## 2.4 Controller
 
@@ -80,7 +80,7 @@ An optional node agent may run on each Ollama host to provide:
 
 # 3. Cluster Initialisation
 
-## FR-001 — Initialise a cluster
+## FR-001: Initialise a cluster
 
 The system must provide an initialisation command:
 
@@ -99,7 +99,7 @@ The initialisation process must:
 - create required service files;
 - validate the completed configuration.
 
-## FR-002 — Interactive and non-interactive initialisation
+## FR-002: Interactive and non-interactive initialisation
 
 The initialisation command must support:
 
@@ -108,7 +108,7 @@ The initialisation command must support:
 - configuration file input;
 - unattended installation.
 
-## FR-003 — Configuration validation
+## FR-003: Configuration validation
 
 The system must validate:
 
@@ -124,7 +124,7 @@ The system must validate:
 
 # 4. Node Registration and Management
 
-## FR-010 — Add a node
+## FR-010: Add a node
 
 The system must allow an administrator to register a new Ollama node.
 
@@ -141,7 +141,7 @@ The system must:
 - add the node to the cluster registry;
 - make the node eligible for routing once readiness checks pass.
 
-## FR-011 — Remove a node
+## FR-011: Remove a node
 
 The system must allow a node to be removed from the cluster.
 
@@ -157,7 +157,7 @@ The system must:
 - remove the node from the model routing index;
 - retain an audit event for the removal.
 
-## FR-012 — Enable a node
+## FR-012: Enable a node
 
 The system must allow a disabled node to be enabled.
 
@@ -172,7 +172,7 @@ Before returning the node to service, the system must:
 - synchronise model availability;
 - confirm the node is eligible for routing.
 
-## FR-013 — Disable a node
+## FR-013: Disable a node
 
 The system must allow a node to be immediately removed from routing.
 
@@ -187,7 +187,7 @@ Disabling a node must:
 - preserve node registration;
 - preserve model configuration.
 
-## FR-014 — Drain a node
+## FR-014: Drain a node
 
 The system must support graceful node draining.
 
@@ -204,7 +204,7 @@ Draining must:
 - support a configurable drain timeout;
 - support forced termination after the timeout.
 
-## FR-015 — Restart a node
+## FR-015: Restart a node
 
 Where a node agent or supported service control mechanism is available, the system must support:
 
@@ -222,7 +222,7 @@ The restart process must:
 - synchronise model availability;
 - return the node to routing.
 
-## FR-016 — Start and stop Ollama
+## FR-016: Start and stop Ollama
 
 Where supported, the system must provide:
 
@@ -233,7 +233,7 @@ ocluster node stop gpu-01
 
 The system must not expose unrestricted remote shell access.
 
-## FR-017 — Inspect a node
+## FR-017: Inspect a node
 
 The system must provide detailed node information.
 
@@ -263,7 +263,7 @@ The output should include:
 
 # 5. Node States
 
-## FR-020 — Maintain node state
+## FR-020: Maintain node state
 
 Each node must have one of the following operational states:
 
@@ -278,7 +278,7 @@ Each node must have one of the following operational states:
 - `warming`;
 - `error`.
 
-## FR-021 — State transitions
+## FR-021: State transitions
 
 The controller must manage valid transitions between node states.
 
@@ -290,7 +290,7 @@ ready → draining → drained
 disabled → recovering → ready
 ```
 
-## FR-022 — State persistence
+## FR-022: State persistence
 
 Node administrative state must persist across controller restarts.
 
@@ -300,7 +300,7 @@ For example, a manually disabled node must not automatically return to routing a
 
 # 6. Health Monitoring and Recovery
 
-## FR-030 — Passive health monitoring
+## FR-030: Passive health monitoring
 
 The controller must use normal inference requests to detect node failures.
 
@@ -313,7 +313,7 @@ Failure conditions may include:
 - repeated server errors;
 - unexpected stream termination.
 
-## FR-031 — Failure thresholds
+## FR-031: Failure thresholds
 
 The system must support configurable failure thresholds based on failure type.
 
@@ -323,7 +323,7 @@ Examples:
 - ejection after repeated timeouts;
 - ejection after a configurable number of HTTP 500 or 503 responses.
 
-## FR-032 — Node ejection
+## FR-032: Node ejection
 
 When a node exceeds its failure threshold, the system must:
 
@@ -333,7 +333,7 @@ When a node exceeds its failure threshold, the system must:
 - schedule recovery checks;
 - record an operational event.
 
-## FR-033 — Recovery checks
+## FR-033: Recovery checks
 
 Unavailable nodes must be checked periodically using:
 
@@ -342,15 +342,15 @@ Unavailable nodes must be checked periodically using:
 - random jitter;
 - configurable success thresholds.
 
-## FR-034 — Recovery confirmation
+## FR-034: Recovery confirmation
 
 A node must pass a configurable number of successful health checks before it is returned to routing.
 
-## FR-035 — Idle node checks
+## FR-035: Idle node checks
 
 The system should support infrequent health checks for idle healthy nodes to identify silent failures.
 
-## FR-036 — Manual health probe
+## FR-036: Manual health probe
 
 The CLI must allow an administrator to trigger an immediate probe.
 
@@ -362,7 +362,7 @@ ocluster node probe gpu-01
 
 # 7. Model Discovery and Registry
 
-## FR-040 — Automatic model discovery
+## FR-040: Automatic model discovery
 
 The system must discover installed models from an Ollama node using the Ollama API.
 
@@ -376,7 +376,7 @@ Discovery must occur:
 - after a model operation performed through Ollama Cluster;
 - when manually requested.
 
-## FR-041 — Model discovery modes
+## FR-041: Model discovery modes
 
 Each node must support the following model configuration modes.
 
@@ -406,11 +406,11 @@ model_mode = "static"
 models = ["llama3.3:70b"]
 ```
 
-## FR-042 — Discovery as the default
+## FR-042: Discovery as the default
 
 New nodes must use automatic discovery by default unless otherwise configured.
 
-## FR-043 — Maintain discovered and effective models
+## FR-043: Maintain discovered and effective models
 
 For each node, the system must separately maintain:
 
@@ -420,7 +420,7 @@ For each node, the system must separately maintain:
 - effective routable models;
 - currently loaded models.
 
-## FR-044 — Cluster model index
+## FR-044: Cluster model index
 
 The controller must maintain a model-to-node index.
 
@@ -428,12 +428,12 @@ Example:
 
 ```text
 llama3.3:70b
-  gpu-01 — ready, loaded
-  gpu-02 — ready, cold
-  gpu-03 — unavailable
+  gpu-01: ready, loaded
+  gpu-02: ready, cold
+  gpu-03: unavailable
 ```
 
-## FR-045 — Manual model synchronisation
+## FR-045: Manual model synchronisation
 
 The CLI must support synchronising all discoverable nodes.
 
@@ -447,7 +447,7 @@ It must also support synchronising a single node.
 ocluster node models sync gpu-01
 ```
 
-## FR-046 — Model synchronisation preview
+## FR-046: Model synchronisation preview
 
 The system should support a dry-run mode.
 
@@ -462,13 +462,13 @@ The output should identify:
 - changed model digests;
 - configuration drift.
 
-## FR-047 — Background discovery
+## FR-047: Background discovery
 
 The system must support configurable low-frequency background discovery.
 
 The background discovery interval must be configurable globally and per node.
 
-## FR-048 — Model change detection
+## FR-048: Model change detection
 
 The system must calculate a model inventory fingerprint based on attributes such as:
 
@@ -479,7 +479,7 @@ The system must calculate a model inventory fingerprint based on attributes such
 
 The model index should only be updated when the fingerprint changes.
 
-## FR-049 — Optional node notification
+## FR-049: Optional node notification
 
 Where a node agent is installed, the node should be able to notify the controller that its model inventory may have changed.
 
@@ -489,7 +489,7 @@ The controller must then perform authoritative discovery through the Ollama API.
 
 # 8. Model Management
 
-## FR-050 — List models
+## FR-050: List models
 
 The system must provide:
 
@@ -506,7 +506,7 @@ The output should include:
 - active requests;
 - queued requests.
 
-## FR-051 — Inspect a model
+## FR-051: Inspect a model
 
 The system must provide:
 
@@ -525,7 +525,7 @@ The output should include:
 - quantisation;
 - active requests by node.
 
-## FR-052 — Pull a model
+## FR-052: Pull a model
 
 Where supported, the system must allow a model to be pulled to one or more nodes.
 
@@ -542,7 +542,7 @@ The system must:
 - refresh the node model registry;
 - update the cluster routing index.
 
-## FR-053 — Remove a model
+## FR-053: Remove a model
 
 The system must allow a model to be removed from selected nodes.
 
@@ -553,7 +553,7 @@ The operation must:
 - optionally drain active requests;
 - refresh the model registry after deletion.
 
-## FR-054 — Model aliases
+## FR-054: Model aliases
 
 The system should support optional aliases that map client-facing model names to Ollama model names.
 
@@ -565,7 +565,7 @@ Example:
 "fast-chat" = "qwen3:8b"
 ```
 
-## FR-055 — Model restrictions
+## FR-055: Model restrictions
 
 The system must support denying specific models globally or per node.
 
@@ -573,7 +573,7 @@ The system must support denying specific models globally or per node.
 
 # 9. Request Routing
 
-## FR-060 — Model-aware routing
+## FR-060: Model-aware routing
 
 The controller must only route a request to a node that:
 
@@ -582,7 +582,7 @@ The controller must only route a request to a node that:
 - permits the requested model;
 - is below applicable concurrency limits.
 
-## FR-061 — Routing policies
+## FR-061: Routing policies
 
 The system must support configurable routing policies, including:
 
@@ -594,11 +594,11 @@ The system must support configurable routing policies, including:
 - loaded-model preference;
 - estimated least workload.
 
-## FR-062 — Loaded-model preference
+## FR-062: Loaded-model preference
 
 The system should prefer a node where the requested model is already loaded, unless another node is significantly less busy.
 
-## FR-063 — Routing score
+## FR-063: Routing score
 
 The system should support a configurable routing score based on:
 
@@ -611,7 +611,7 @@ The system should support a configurable routing score based on:
 - node capacity;
 - estimated request size.
 
-## FR-064 — Per-node limits
+## FR-064: Per-node limits
 
 Each node must support:
 
@@ -620,7 +620,7 @@ Each node must support:
 - optional per-model limits;
 - optional request admission limits.
 
-## FR-065 — No available node behaviour
+## FR-065: No available node behaviour
 
 Where no eligible node is available, the system must either:
 
@@ -629,7 +629,7 @@ Where no eligible node is available, the system must either:
 
 This behaviour must be configurable.
 
-## FR-066 — Queue limits
+## FR-066: Queue limits
 
 The system must enforce:
 
@@ -637,7 +637,7 @@ The system must enforce:
 - maximum queue wait time;
 - optional per-model queue limits.
 
-## FR-067 — Routing transparency
+## FR-067: Routing transparency
 
 The system must provide a command to explain model routing eligibility.
 
@@ -657,15 +657,15 @@ The output must identify:
 
 # 10. Proxy and Streaming Behaviour
 
-## FR-070 — Ollama API compatibility
+## FR-070: Ollama API compatibility
 
 The proxy must preserve compatibility with supported Ollama API endpoints used for inference.
 
-## FR-071 — Streaming responses
+## FR-071: Streaming responses
 
 The system must stream responses from Ollama to the client without buffering the complete response.
 
-## FR-072 — Backpressure
+## FR-072: Backpressure
 
 The proxy must respect backpressure between:
 
@@ -673,19 +673,19 @@ The proxy must respect backpressure between:
 - the controller;
 - the client.
 
-## FR-073 — Client cancellation
+## FR-073: Client cancellation
 
 When a client disconnects or cancels a request, the system must attempt to cancel the corresponding upstream Ollama request.
 
-## FR-074 — Retry before response
+## FR-074: Retry before response
 
 If a request fails before response streaming begins, the controller may retry the request on another eligible node.
 
-## FR-075 — No transparent retry after streaming
+## FR-075: No transparent retry after streaming
 
 Once response data has been sent to the client, the system must not transparently retry the request on another node.
 
-## FR-076 — Retry limits
+## FR-076: Retry limits
 
 The system must provide configurable limits for:
 
@@ -694,7 +694,7 @@ The system must provide configurable limits for:
 - retry timeout;
 - alternate-node selection.
 
-## FR-077 — Connection reuse
+## FR-077: Connection reuse
 
 The proxy must reuse upstream HTTP connections where possible.
 
@@ -702,7 +702,7 @@ The proxy must reuse upstream HTTP connections where possible.
 
 # 11. Request Monitoring
 
-## FR-080 — List active requests
+## FR-080: List active requests
 
 The system must provide:
 
@@ -720,7 +720,7 @@ The output should include:
 - request state;
 - streaming state.
 
-## FR-081 — Watch requests
+## FR-081: Watch requests
 
 The CLI must support live request monitoring.
 
@@ -728,7 +728,7 @@ The CLI must support live request monitoring.
 ocluster requests watch
 ```
 
-## FR-082 — Cancel a request
+## FR-082: Cancel a request
 
 An administrator must be able to cancel an active request.
 
@@ -736,7 +736,7 @@ An administrator must be able to cancel an active request.
 ocluster request cancel <request-id>
 ```
 
-## FR-083 — Request history
+## FR-083: Request history
 
 The system should maintain configurable short-term request history containing:
 
@@ -755,7 +755,7 @@ Request content must not be stored by default.
 
 # 12. Cluster Status and Visibility
 
-## FR-090 — Cluster status
+## FR-090: Cluster status
 
 The system must provide:
 
@@ -776,7 +776,7 @@ The output must summarise:
 - queued requests;
 - recent failures.
 
-## FR-091 — List nodes
+## FR-091: List nodes
 
 The system must provide:
 
@@ -795,7 +795,7 @@ The output should include:
 - recent latency;
 - last contact.
 
-## FR-092 — Health summary
+## FR-092: Health summary
 
 The system must provide:
 
@@ -812,7 +812,7 @@ The output must highlight:
 - configuration drift;
 - models with no available nodes.
 
-## FR-093 — Events
+## FR-093: Events
 
 The system must provide:
 
@@ -836,7 +836,7 @@ Events should include:
 
 # 13. Interactive Terminal Interface
 
-## FR-100 — Launch interactive interface
+## FR-100: Launch interactive interface
 
 Running the command without arguments should launch an interactive terminal interface where supported.
 
@@ -850,7 +850,7 @@ The system may also support:
 ocluster dashboard
 ```
 
-## FR-101 — Dashboard views
+## FR-101: Dashboard views
 
 The terminal interface should provide views for:
 
@@ -863,7 +863,7 @@ The terminal interface should provide views for:
 - events;
 - configuration.
 
-## FR-102 — Node actions
+## FR-102: Node actions
 
 From the terminal interface, an administrator should be able to:
 
@@ -876,7 +876,7 @@ From the terminal interface, an administrator should be able to:
 - view logs;
 - trigger a health probe.
 
-## FR-103 — Model actions
+## FR-103: Model actions
 
 From the terminal interface, an administrator should be able to:
 
@@ -886,7 +886,7 @@ From the terminal interface, an administrator should be able to:
 - remove a model;
 - synchronise model state.
 
-## FR-104 — Confirmation prompts
+## FR-104: Confirmation prompts
 
 Destructive operations must require confirmation unless a force or non-interactive flag is supplied.
 
@@ -894,7 +894,7 @@ Destructive operations must require confirmation unless a force or non-interacti
 
 # 14. Configuration Management
 
-## FR-110 — Show configuration
+## FR-110: Show configuration
 
 The system must provide:
 
@@ -902,7 +902,7 @@ The system must provide:
 ocluster config show
 ```
 
-## FR-111 — Edit configuration
+## FR-111: Edit configuration
 
 The system should provide:
 
@@ -910,7 +910,7 @@ The system should provide:
 ocluster config edit
 ```
 
-## FR-112 — Validate configuration
+## FR-112: Validate configuration
 
 The system must provide:
 
@@ -918,11 +918,11 @@ The system must provide:
 ocluster config validate
 ```
 
-## FR-113 — Apply configuration
+## FR-113: Apply configuration
 
 The system must allow validated configuration changes to be applied without restarting the controller where practical.
 
-## FR-114 — Configuration precedence
+## FR-114: Configuration precedence
 
 The system must define precedence between:
 
@@ -932,7 +932,7 @@ The system must define precedence between:
 - command-line options;
 - runtime controller state.
 
-## FR-115 — Configuration reload
+## FR-115: Configuration reload
 
 The system should support:
 
@@ -940,7 +940,7 @@ The system should support:
 ocluster config reload
 ```
 
-## FR-116 — Configuration rollback
+## FR-116: Configuration rollback
 
 The system should retain the previous valid configuration and allow rollback after an invalid or unsuccessful update.
 
@@ -948,7 +948,7 @@ The system should retain the previous valid configuration and allow rollback aft
 
 # 15. Logging and Metrics
 
-## FR-120 — Controller logs
+## FR-120: Controller logs
 
 The system must produce structured logs for:
 
@@ -960,7 +960,7 @@ The system must produce structured logs for:
 - request failures;
 - configuration changes.
 
-## FR-121 — View logs
+## FR-121: View logs
 
 The CLI must support:
 
@@ -969,7 +969,7 @@ ocluster logs
 ocluster logs --follow
 ```
 
-## FR-122 — Node logs
+## FR-122: Node logs
 
 Where a node agent is installed, the CLI should support:
 
@@ -978,7 +978,7 @@ ocluster logs gpu-01
 ocluster logs gpu-01 --follow
 ```
 
-## FR-123 — Metrics
+## FR-123: Metrics
 
 The system must expose operational metrics including:
 
@@ -993,7 +993,7 @@ The system must expose operational metrics including:
 - model availability;
 - token throughput where available.
 
-## FR-124 — Metrics endpoint
+## FR-124: Metrics endpoint
 
 The controller should expose metrics in a format compatible with Prometheus.
 
@@ -1001,7 +1001,7 @@ The controller should expose metrics in a format compatible with Prometheus.
 
 # 16. Service Management
 
-## FR-130 — Run as a service
+## FR-130: Run as a service
 
 The controller must be capable of running as a system service named:
 
@@ -1009,7 +1009,7 @@ The controller must be capable of running as a system service named:
 ocluster.service
 ```
 
-## FR-131 — Service commands
+## FR-131: Service commands
 
 The application must support appropriate behaviour when controlled through:
 
@@ -1020,7 +1020,7 @@ systemctl restart ocluster
 systemctl status ocluster
 ```
 
-## FR-132 — Graceful shutdown
+## FR-132: Graceful shutdown
 
 When shutting down, the controller must:
 
@@ -1033,14 +1033,14 @@ When shutting down, the controller must:
 
 # 17. Security and Access Control
 
-## FR-140 — Separate management and inference interfaces
+## FR-140: Separate management and inference interfaces
 
 The system must support separate endpoints for:
 
 - inference traffic;
 - management traffic.
 
-## FR-141 — Local management socket
+## FR-141: Local management socket
 
 The system should support a Unix domain socket for local management.
 
@@ -1050,11 +1050,11 @@ Example:
 /run/ocluster/ocluster.sock
 ```
 
-## FR-142 — Remote management security
+## FR-142: Remote management security
 
 Remote management must require authenticated and encrypted communication.
 
-## FR-143 — Administrative permissions
+## FR-143: Administrative permissions
 
 The system should support permissions for:
 
@@ -1064,7 +1064,7 @@ The system should support permissions for:
 - configuration management;
 - cluster administration.
 
-## FR-144 — Audit trail
+## FR-144: Audit trail
 
 Administrative actions must be recorded with:
 
@@ -1078,7 +1078,7 @@ Administrative actions must be recorded with:
 
 # 18. High Availability and Persistence
 
-## FR-150 — Persistent cluster state
+## FR-150: Persistent cluster state
 
 The controller must persist:
 
@@ -1089,7 +1089,7 @@ The controller must persist:
 - routing configuration;
 - recent operational events.
 
-## FR-151 — Controller restart recovery
+## FR-151: Controller restart recovery
 
 After a restart, the controller must:
 
@@ -1099,7 +1099,7 @@ After a restart, the controller must:
 - synchronise discovered models;
 - rebuild the model routing index.
 
-## FR-152 — Controller high availability
+## FR-152: Controller high availability
 
 A future version should support multiple controller instances with coordinated cluster state and leader election.
 
@@ -1109,11 +1109,11 @@ This is not required for the initial release unless specifically included in sco
 
 # 19. CLI Output and Automation
 
-## FR-160 — Human-readable output
+## FR-160: Human-readable output
 
 CLI commands must provide clear terminal-friendly output by default.
 
-## FR-161 — Machine-readable output
+## FR-161: Machine-readable output
 
 Read-only commands must support machine-readable formats.
 
@@ -1123,7 +1123,7 @@ ocluster nodes --output json
 ocluster models --output yaml
 ```
 
-## FR-162 — Exit codes
+## FR-162: Exit codes
 
 Commands must return consistent exit codes for:
 
@@ -1134,7 +1134,7 @@ Commands must return consistent exit codes for:
 - unavailable resource;
 - unauthorised operation.
 
-## FR-163 — Non-interactive operation
+## FR-163: Non-interactive operation
 
 All management actions must support non-interactive execution for use in scripts and automation.
 

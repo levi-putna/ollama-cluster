@@ -4,7 +4,11 @@ use clap::Parser;
 
 /// Node agent for local Ollama host management.
 #[derive(Debug, Parser)]
-#[command(name = "ocluster-agent", version, about = "Ollama Cluster node agent (stub)")]
+#[command(
+    name = "ocluster-agent",
+    version,
+    about = "Ollama Cluster node agent (stub)"
+)]
 struct Args {}
 
 fn main() {

@@ -107,7 +107,9 @@ pub struct RejectedCandidate {
 }
 
 /// Filter candidates to those eligible for routing.
-pub fn filter_candidates(candidates: &[RoutingCandidate]) -> (Vec<&RoutingCandidate>, Vec<RejectedCandidate>) {
+pub fn filter_candidates(
+    candidates: &[RoutingCandidate],
+) -> (Vec<&RoutingCandidate>, Vec<RejectedCandidate>) {
     let mut eligible = Vec::new();
     let mut rejected = Vec::new();
 

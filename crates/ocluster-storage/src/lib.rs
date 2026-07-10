@@ -5,4 +5,4 @@ pub mod migrations;
 pub mod store;
 
 pub use error::StorageError;
-pub use store::{ClusterEvent, NodeRecord, StoredModel, Storage};
+pub use store::{ClusterEvent, NodeRecord, Storage, StoredModel};

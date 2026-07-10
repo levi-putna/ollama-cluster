@@ -112,12 +112,14 @@ impl ManagementClient {
 
     /// Enable a node.
     pub async fn enable_node(&self, name: &str) -> Result<OperationResponse> {
-        self.post(&format!("/api/v1/nodes/{name}/enable"), &()).await
+        self.post(&format!("/api/v1/nodes/{name}/enable"), &())
+            .await
     }
 
     /// Disable a node.
     pub async fn disable_node(&self, name: &str) -> Result<OperationResponse> {
-        self.post(&format!("/api/v1/nodes/{name}/disable"), &()).await
+        self.post(&format!("/api/v1/nodes/{name}/disable"), &())
+            .await
     }
 
     /// Drain a node.

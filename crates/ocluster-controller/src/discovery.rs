@@ -1,6 +1,4 @@
-use ocluster_core::{
-    effective_models, fingerprint::ModelInventoryEntry, inventory_fingerprint,
-};
+use ocluster_core::{effective_models, fingerprint::ModelInventoryEntry, inventory_fingerprint};
 use ocluster_storage::StoredModel;
 use reqwest::Client;
 use uuid::Uuid;
@@ -143,10 +141,7 @@ pub fn apply_discovery_to_runtime(
                 digest: m.digest.clone(),
                 size: m.size,
                 family: m.details.as_ref().and_then(|d| d.family.clone()),
-                parameter_size: m
-                    .details
-                    .as_ref()
-                    .and_then(|d| d.parameter_size.clone()),
+                parameter_size: m.details.as_ref().and_then(|d| d.parameter_size.clone()),
                 quantisation: m
                     .details
                     .as_ref()

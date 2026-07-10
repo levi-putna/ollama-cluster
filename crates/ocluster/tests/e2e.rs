@@ -186,7 +186,12 @@ async fn disabled_node_not_used_for_routing() {
         .await
         .unwrap();
     assert!(resp.status().is_success());
-    let node = resp.headers().get("x-ocluster-node").unwrap().to_str().unwrap();
+    let node = resp
+        .headers()
+        .get("x-ocluster-node")
+        .unwrap()
+        .to_str()
+        .unwrap();
     assert_eq!(node, "node-b");
 
     let _ = child.kill();

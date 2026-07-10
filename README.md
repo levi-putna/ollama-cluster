@@ -2,6 +2,8 @@
 
 Ollama Cluster is a lightweight cluster management and intelligent routing platform for multiple Ollama instances. It provides model-aware request routing, automatic failover, node health monitoring, and a unified Ollama-compatible inference endpoint.
 
+→ [About this project](about.md): why it exists, how it works, and who it is for.
+
 ## Features (0.1.0)
 
 - Cluster initialisation and TOML configuration
@@ -11,10 +13,71 @@ Ollama Cluster is a lightweight cluster management and intelligent routing platf
 - Passive failure detection and circuit-breaker ejection
 - Pre-stream retry on alternate nodes
 - Management REST API and CLI
-- **Interactive terminal dashboard (Ratatui TUI)**
+- **Interactive terminal dashboard**
 - **Web admin panel** (browser dashboard on port 11602)
 - Prometheus metrics endpoint
 - SQLite persistence and controller restart recovery
+
+## Install
+
+You do not need to clone this repository. Pick one of the options below.
+
+### Option A: Pre-built binary (recommended)
+
+Download a release for your platform from [GitHub Releases](https://github.com/levi-putna/ollama-cluster/releases). Archives are named by target triple:
+
+| Platform | Archive |
+| -------- | ------- |
+| macOS (Apple Silicon) | `ocluster-aarch64-apple-darwin.tar.gz` |
+| macOS (Intel) | `ocluster-x86_64-apple-darwin.tar.gz` |
+| Linux (x86_64) | `ocluster-x86_64-unknown-linux-gnu.tar.gz` |
+| Linux (ARM64) | `ocluster-aarch64-unknown-linux-gnu.tar.gz` |
+
+**Apple Silicon Mac:**
+
+```bash
+curl -LO https://github.com/levi-putna/ollama-cluster/releases/latest/download/ocluster-aarch64-apple-darwin.tar.gz
+curl -LO https://github.com/levi-putna/ollama-cluster/releases/latest/download/ocluster-aarch64-apple-darwin.tar.gz.sha256
+shasum -a 256 -c ocluster-aarch64-apple-darwin.tar.gz.sha256
+tar xzf ocluster-aarch64-apple-darwin.tar.gz
+sudo mv ocluster /usr/local/bin/
+ocluster --version
+```
+
+**Linux (x86_64):**
+
+```bash
+curl -LO https://github.com/levi-putna/ollama-cluster/releases/latest/download/ocluster-x86_64-unknown-linux-gnu.tar.gz
+curl -LO https://github.com/levi-putna/ollama-cluster/releases/latest/download/ocluster-x86_64-unknown-linux-gnu.tar.gz.sha256
+sha256sum -c ocluster-x86_64-unknown-linux-gnu.tar.gz.sha256
+tar xzf ocluster-x86_64-unknown-linux-gnu.tar.gz
+sudo mv ocluster /usr/local/bin/
+ocluster --version
+```
+
+Verify checksums for all platforms with the `SHA256SUMS` file on each release page.
+
+New releases are published automatically when a version tag (e.g. `v0.1.0`) is pushed.
+
+### Option B: Install with Cargo (from GitHub)
+
+Requires [Rust](https://rustup.rs/) 1.88+. Cargo downloads the source and compiles locally (first install may take several minutes):
+
+```bash
+cargo install --git https://github.com/levi-putna/ollama-cluster --bin ocluster
+```
+
+Install a specific version:
+
+```bash
+cargo install --git https://github.com/levi-putna/ollama-cluster --tag v0.1.0 --bin ocluster
+```
+
+The binary is placed in `~/.cargo/bin`. Ensure that directory is on your `PATH`.
+
+### Option C: Build from a clone
+
+For development or contributing, clone the repository and build locally. See [Build](#build) below.
 
 ## Prerequisites
 
@@ -50,7 +113,7 @@ target/release/ocluster
 target/release/ocluster-agent   # stub in 0.1.0
 ```
 
-Install locally (optional):
+Install from a local clone (development only):
 
 ```bash
 cargo install --path crates/ocluster
@@ -127,23 +190,23 @@ curl http://127.0.0.1:11434/api/generate -d '{
 
 Response headers include:
 
-- `X-OCluster-Node` — backend node name
-- `X-OCluster-Request-ID` — correlation ID
-- `X-OCluster-Retry-Count` — retry attempts
+- `X-OCluster-Node`: backend node name
+- `X-OCluster-Request-ID`: correlation ID
+- `X-OCluster-Retry-Count`: retry attempts
 
-## Interactive TUI (Ratatui)
+## Interactive terminal dashboard
 
 The cluster includes a terminal dashboard for live monitoring and node operations. It reads from the management API only (the controller must be running).
 
 ### Launch the dashboard
 
-Running `ocluster` with no subcommand opens the TUI (same as `ocluster dashboard`):
+Running `ocluster` with no subcommand opens the dashboard (same as `ocluster dashboard`):
 
 ```bash
 # Controller must already be running (see Quick start step 3)
 cargo run -p ocluster -- serve   # in one terminal
 
-cargo run -p ocluster --          # TUI in another terminal
+cargo run -p ocluster --          # dashboard in another terminal
 # or explicitly:
 cargo run -p ocluster -- dashboard
 ```
@@ -198,7 +261,7 @@ Data refreshes automatically every 2 seconds. Press `r` to refresh immediately.
 | `p` | Probe selected node |
 | `s` | Sync models across cluster |
 
-Destructive actions show a confirmation prompt — press `y` to confirm or `n` / `Esc` to cancel.
+Destructive actions show a confirmation prompt. Press `y` to confirm or `n` / `Esc` to cancel.
 
 ## Web admin panel
 
@@ -207,10 +270,10 @@ The cluster includes a browser-based admin panel for monitoring cluster heartbea
 ### Launch the admin panel
 
 ```bash
-# Terminal 1 — controller
+# Terminal 1: controller
 cargo run -p ocluster -- serve
 
-# Terminal 2 — admin panel (default http://127.0.0.1:11602)
+# Terminal 2: admin panel (default http://127.0.0.1:11602)
 cargo run -p ocluster -- admin
 ```
 
@@ -258,7 +321,7 @@ ocluster --endpoint http://192.168.1.10:11600 admin --listen 127.0.0.1:11602
 ## CLI reference
 
 ```bash
-ocluster dashboard                     # Terminal dashboard (Ratatui)
+ocluster dashboard                     # Terminal dashboard
 ocluster admin [--listen HOST:PORT]    # Web admin panel (default 127.0.0.1:11602)
 ocluster init                          # Create configuration
 ocluster serve                         # Run controller
@@ -297,15 +360,49 @@ See [config/ocluster.toml.example](config/ocluster.toml.example) for all options
 
 ## Running tests
 
+**Recommended** (clean per-test output + summary):
+
 ```bash
-# Unit and integration tests
+# One-time install (needs Rust 1.88+)
+cargo install cargo-nextest --locked --version 0.9.114
+
+# Run all 30 tests across the workspace
+cargo nextest run --workspace
+```
+
+Example summary:
+
+```text
+Summary [1.263s] 30 tests run: 30 passed, 0 skipped
+```
+
+Or use the helper script (uses nextest when installed):
+
+```bash
+./scripts/test.sh
+```
+
+**Standard cargo** (verbose; many crates show `running 0 tests` because they are libraries without inline tests):
+
+```bash
 cargo test --workspace
+cargo test --workspace --quiet   # less output, still no single summary line
+```
 
-# With clippy (matches CI)
+Run specific suites:
+
+```bash
+cargo nextest run -p ocluster-core          # 18 unit tests
+cargo nextest run -p ocluster --test e2e    # 3 end-to-end tests
+cargo test -p ocluster-core routing::tests::least_active_request_wins
+```
+
+CI checks (same as GitHub Actions):
+
+```bash
+cargo fmt --all --check
 cargo clippy --workspace -- -D warnings
-
-# End-to-end tests (spawn controller + mock Ollama)
-cargo test -p ocluster --test e2e
+cargo nextest run --workspace   # or: cargo test --workspace
 ```
 
 Test fixtures live in [tests/fixtures/](tests/fixtures/).
@@ -321,7 +418,7 @@ Client → ocluster proxy (:11434)
               ↓
          Routing engine → Ollama nodes
               ↓
-         Management API (:11600) ← CLI / TUI / admin panel (:11602)
+         Management API (:11600), CLI, terminal dashboard, admin panel (:11602)
               ↓
          SQLite persistence
 ```

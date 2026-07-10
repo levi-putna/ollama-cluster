@@ -59,7 +59,7 @@ Ollama Cluster is **source-available**, not OSI open source. The code is public 
 
 ### Can I use it commercially on the Free License?
 
-Yes — if you meet the eligibility criteria (individual, non-profit, or for-profit organisation with annual gross revenue of AUD $100,000 or less).
+Yes. If you meet the eligibility criteria (individual, non-profit, or for-profit organisation with annual gross revenue of AUD $100,000 or less).
 
 ### How is "annual gross revenue" defined?
 

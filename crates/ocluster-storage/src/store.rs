@@ -89,8 +89,8 @@ impl Storage {
         let now = Utc::now().to_rfc3339();
         let configured = serde_json::to_string(&node.configured_models)
             .map_err(|e| StorageError::Serialization(e.to_string()))?;
-        let labels =
-            serde_json::to_string(&node.labels).map_err(|e| StorageError::Serialization(e.to_string()))?;
+        let labels = serde_json::to_string(&node.labels)
+            .map_err(|e| StorageError::Serialization(e.to_string()))?;
 
         self.conn.lock().unwrap().execute(
             "INSERT INTO nodes (id, name, url, admin_state, runtime_state, ollama_version,
@@ -188,10 +188,7 @@ impl Storage {
 
     /// Get a node by name.
     pub fn get_node(&self, name: &str) -> Result<Option<NodeRecord>, StorageError> {
-        Ok(self
-            .list_nodes()?
-            .into_iter()
-            .find(|n| n.name == name))
+        Ok(self.list_nodes()?.into_iter().find(|n| n.name == name))
     }
 
     /// Remove a node and associated models transactionally.
@@ -312,7 +309,8 @@ impl Storage {
                     .unwrap_or_else(|_| Utc::now()),
             })
         })?;
-        rows.collect::<Result<Vec<_>, _>>().map_err(StorageError::from)
+        rows.collect::<Result<Vec<_>, _>>()
+            .map_err(StorageError::from)
     }
 
     /// Append an audit record.

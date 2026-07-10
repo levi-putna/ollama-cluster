@@ -85,31 +85,27 @@ mod tests {
     /// Covers: FR-020, FR-021, TR-072, TXR-020
     #[test]
     fn valid_runtime_transitions() {
-        assert!(validate_runtime_transition(
-            NodeRuntimeState::Ready,
-            NodeRuntimeState::Suspect
-        )
-        .is_ok());
+        assert!(
+            validate_runtime_transition(NodeRuntimeState::Ready, NodeRuntimeState::Suspect).is_ok()
+        );
         assert!(validate_runtime_transition(
             NodeRuntimeState::Unavailable,
             NodeRuntimeState::Recovering
         )
         .is_ok());
-        assert!(validate_runtime_transition(
-            NodeRuntimeState::Recovering,
-            NodeRuntimeState::Ready
-        )
-        .is_ok());
+        assert!(
+            validate_runtime_transition(NodeRuntimeState::Recovering, NodeRuntimeState::Ready)
+                .is_ok()
+        );
     }
 
     /// Covers: FR-020, FR-021, TXR-020
     #[test]
     fn invalid_runtime_transitions_rejected() {
-        assert!(validate_runtime_transition(
-            NodeRuntimeState::Ready,
-            NodeRuntimeState::Recovering
-        )
-        .is_err());
+        assert!(
+            validate_runtime_transition(NodeRuntimeState::Ready, NodeRuntimeState::Recovering)
+                .is_err()
+        );
     }
 
     /// Covers: FR-013, TR-072, TXR-111-03

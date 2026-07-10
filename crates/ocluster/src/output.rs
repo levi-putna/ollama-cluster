@@ -100,7 +100,10 @@ impl OutputWriter {
                 for e in events {
                     println!(
                         "{} [{}] {} — {}",
-                        e.created_at, e.event_type, e.target.as_deref().unwrap_or("-"), e.message
+                        e.created_at,
+                        e.event_type,
+                        e.target.as_deref().unwrap_or("-"),
+                        e.message
                     );
                 }
             }

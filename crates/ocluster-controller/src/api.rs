@@ -5,15 +5,15 @@ use axum::{
     routing::{delete, get, post},
     Json, Router,
 };
-use ocluster_core::{explain_routing, AdminState, ModelMode, NodeRuntimeState};
 use ocluster_config::validate::is_url_allowed;
+use ocluster_core::{explain_routing, AdminState, ModelMode, NodeRuntimeState};
+use ocluster_protocol::ApiErrorBody;
 use ocluster_protocol::{
     AddNodeRequest, ClusterStatusResponse, ConfigResponse, EventResponse, ExplainResponse,
     HealthSummaryResponse, ModelDetailResponse, ModelNodeDetail, ModelSummary, NodeDetailResponse,
     NodeSummary, OperationResponse, RequestSummary, UpdateNodeRequest, VersionResponse,
     API_VERSION, APP_VERSION,
 };
-use ocluster_protocol::ApiErrorBody;
 use ocluster_storage::NodeRecord;
 use serde_json::json;
 use uuid::Uuid;
@@ -65,8 +65,15 @@ async fn liveness() -> impl IntoResponse {
 async fn readiness(State(state): State<AppState>) -> impl IntoResponse {
     let rt = state.runtime.read().await;
     let ready = !rt.shutting_down;
-    let status = if ready { StatusCode::OK } else { StatusCode::SERVICE_UNAVAILABLE };
-    (status, Json(json!({ "status": if ready { "ready" } else { "not_ready" } })))
+    let status = if ready {
+        StatusCode::OK
+    } else {
+        StatusCode::SERVICE_UNAVAILABLE
+    };
+    (
+        status,
+        Json(json!({ "status": if ready { "ready" } else { "not_ready" } })),
+    )
 }
 
 async fn version() -> impl IntoResponse {
@@ -114,7 +121,9 @@ async fn cluster_status(State(state): State<AppState>) -> impl IntoResponse {
         nodes_draining,
         models_total: unique_models.len(),
         active_requests: rt.requests.len(),
-        queued_requests: rt.queued_requests.load(std::sync::atomic::Ordering::Relaxed),
+        queued_requests: rt
+            .queued_requests
+            .load(std::sync::atomic::Ordering::Relaxed),
     })
 }
 
@@ -141,7 +150,11 @@ async fn list_nodes(State(state): State<AppState>) -> impl IntoResponse {
 async fn get_node(State(state): State<AppState>, Path(name): Path<String>) -> impl IntoResponse {
     let rt = state.runtime.read().await;
     let Some(node) = rt.nodes.get(&name) else {
-        return api_error(StatusCode::NOT_FOUND, "NODE_NOT_FOUND", format!("Node '{name}' not found"));
+        return api_error(
+            StatusCode::NOT_FOUND,
+            "NODE_NOT_FOUND",
+            format!("Node '{name}' not found"),
+        );
     };
     Json(node_detail(node)).into_response()
 }
@@ -183,7 +196,11 @@ async fn add_node(
     };
 
     if let Err(e) = rt.upsert_runtime_node(record) {
-        return api_error(StatusCode::INTERNAL_SERVER_ERROR, "STORAGE_ERROR", e.to_string());
+        return api_error(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "STORAGE_ERROR",
+            e.to_string(),
+        );
     }
 
     let url = req.url.clone();
@@ -194,8 +211,12 @@ async fn add_node(
         Ok(result) => {
             let mut rt = state.runtime.write().await;
             let _ = apply_discovery_to_runtime(&mut rt, &req.name, &result);
-            let _ = rt.storage.append_event("node_added", Some(&req.name), "node registered");
-            let _ = rt.storage.append_audit("node_add", Some(&req.name), "success", None);
+            let _ = rt
+                .storage
+                .append_event("node_added", Some(&req.name), "node registered");
+            let _ = rt
+                .storage
+                .append_audit("node_add", Some(&req.name), "success", None);
         }
         Err(e) => {
             let rt = state.runtime.write().await;
@@ -227,7 +248,11 @@ async fn update_node(
 
     let mut rt = state.runtime.write().await;
     let Some(node) = rt.nodes.get_mut(&name) else {
-        return api_error(StatusCode::NOT_FOUND, "NODE_NOT_FOUND", format!("Node '{name}' not found"));
+        return api_error(
+            StatusCode::NOT_FOUND,
+            "NODE_NOT_FOUND",
+            format!("Node '{name}' not found"),
+        );
     };
 
     let url_changed = if let Some(ref url) = req.url {
@@ -257,7 +282,11 @@ async fn update_node(
     let url = record.url.clone();
     let timeout = rt.config.discovery.timeout_ms;
     if let Err(e) = rt.storage.upsert_node(&record) {
-        return api_error(StatusCode::INTERNAL_SERVER_ERROR, "STORAGE_ERROR", e.to_string());
+        return api_error(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "STORAGE_ERROR",
+            e.to_string(),
+        );
     }
     drop(rt);
 
@@ -279,7 +308,9 @@ async fn update_node(
     }
 
     let rt = state.runtime.read().await;
-    let _ = rt.storage.append_event("node_updated", Some(&name), "node configuration updated");
+    let _ = rt
+        .storage
+        .append_event("node_updated", Some(&name), "node configuration updated");
     drop(rt);
 
     Json(OperationResponse {
@@ -289,13 +320,14 @@ async fn update_node(
     .into_response()
 }
 
-async fn remove_node(
-    State(state): State<AppState>,
-    Path(name): Path<String>,
-) -> impl IntoResponse {
+async fn remove_node(State(state): State<AppState>, Path(name): Path<String>) -> impl IntoResponse {
     let mut rt = state.runtime.write().await;
     if !rt.nodes.contains_key(&name) {
-        return api_error(StatusCode::NOT_FOUND, "NODE_NOT_FOUND", format!("Node '{name}' not found"));
+        return api_error(
+            StatusCode::NOT_FOUND,
+            "NODE_NOT_FOUND",
+            format!("Node '{name}' not found"),
+        );
     }
     if rt.requests.values().any(|r| r.node_name == name) {
         return api_error(
@@ -306,8 +338,12 @@ async fn remove_node(
     }
     rt.nodes.remove(&name);
     let _ = rt.storage.remove_node(&name);
-    let _ = rt.storage.append_event("node_removed", Some(&name), "node removed");
-    let _ = rt.storage.append_audit("node_remove", Some(&name), "success", None);
+    let _ = rt
+        .storage
+        .append_event("node_removed", Some(&name), "node removed");
+    let _ = rt
+        .storage
+        .append_audit("node_remove", Some(&name), "success", None);
     Json(OperationResponse {
         success: true,
         message: format!("Node '{name}' removed"),
@@ -315,13 +351,14 @@ async fn remove_node(
     .into_response()
 }
 
-async fn enable_node(
-    State(state): State<AppState>,
-    Path(name): Path<String>,
-) -> impl IntoResponse {
+async fn enable_node(State(state): State<AppState>, Path(name): Path<String>) -> impl IntoResponse {
     let mut rt = state.runtime.write().await;
     let Some(node) = rt.nodes.get_mut(&name) else {
-        return api_error(StatusCode::NOT_FOUND, "NODE_NOT_FOUND", format!("Node '{name}' not found"));
+        return api_error(
+            StatusCode::NOT_FOUND,
+            "NODE_NOT_FOUND",
+            format!("Node '{name}' not found"),
+        );
     };
     node.record.admin_state = AdminState::Enabled;
     let record = node.record.clone();
@@ -349,12 +386,18 @@ async fn disable_node(
 ) -> impl IntoResponse {
     let mut rt = state.runtime.write().await;
     let Some(node) = rt.nodes.get_mut(&name) else {
-        return api_error(StatusCode::NOT_FOUND, "NODE_NOT_FOUND", format!("Node '{name}' not found"));
+        return api_error(
+            StatusCode::NOT_FOUND,
+            "NODE_NOT_FOUND",
+            format!("Node '{name}' not found"),
+        );
     };
     node.record.admin_state = AdminState::Disabled;
     let record = node.record.clone();
     let _ = rt.storage.upsert_node(&record);
-    let _ = rt.storage.append_event("node_disabled", Some(&name), "node disabled");
+    let _ = rt
+        .storage
+        .append_event("node_disabled", Some(&name), "node disabled");
     Json(OperationResponse {
         success: true,
         message: format!("Node '{name}' disabled"),
@@ -362,18 +405,21 @@ async fn disable_node(
     .into_response()
 }
 
-async fn drain_node(
-    State(state): State<AppState>,
-    Path(name): Path<String>,
-) -> impl IntoResponse {
+async fn drain_node(State(state): State<AppState>, Path(name): Path<String>) -> impl IntoResponse {
     let mut rt = state.runtime.write().await;
     let Some(node) = rt.nodes.get_mut(&name) else {
-        return api_error(StatusCode::NOT_FOUND, "NODE_NOT_FOUND", format!("Node '{name}' not found"));
+        return api_error(
+            StatusCode::NOT_FOUND,
+            "NODE_NOT_FOUND",
+            format!("Node '{name}' not found"),
+        );
     };
     node.record.admin_state = AdminState::Draining;
     let record = node.record.clone();
     let _ = rt.storage.upsert_node(&record);
-    let _ = rt.storage.append_event("drain_started", Some(&name), "node draining");
+    let _ = rt
+        .storage
+        .append_event("drain_started", Some(&name), "node draining");
     Json(OperationResponse {
         success: true,
         message: format!("Node '{name}' draining"),
@@ -381,13 +427,14 @@ async fn drain_node(
     .into_response()
 }
 
-async fn probe_node(
-    State(state): State<AppState>,
-    Path(name): Path<String>,
-) -> impl IntoResponse {
+async fn probe_node(State(state): State<AppState>, Path(name): Path<String>) -> impl IntoResponse {
     let rt = state.runtime.read().await;
     let Some(node) = rt.nodes.get(&name) else {
-        return api_error(StatusCode::NOT_FOUND, "NODE_NOT_FOUND", format!("Node '{name}' not found"));
+        return api_error(
+            StatusCode::NOT_FOUND,
+            "NODE_NOT_FOUND",
+            format!("Node '{name}' not found"),
+        );
     };
     let url = node.record.url.clone();
     let timeout = rt.config.discovery.timeout_ms;
@@ -398,8 +445,7 @@ async fn probe_node(
             let mut rt = state.runtime.write().await;
             let _ = apply_discovery_to_runtime(&mut rt, &name, &result);
             record_success(&mut rt, &name);
-            Json(json!({ "status": "healthy", "version": result.ollama_version }))
-                .into_response()
+            Json(json!({ "status": "healthy", "version": result.ollama_version })).into_response()
         }
         Err(e) => api_error(StatusCode::SERVICE_UNAVAILABLE, "PROBE_FAILED", e),
     }
@@ -428,10 +474,7 @@ async fn list_models(State(state): State<AppState>) -> impl IntoResponse {
     Json(map.into_values().collect::<Vec<_>>())
 }
 
-async fn get_model(
-    State(state): State<AppState>,
-    Path(name): Path<String>,
-) -> impl IntoResponse {
+async fn get_model(State(state): State<AppState>, Path(name): Path<String>) -> impl IntoResponse {
     let rt = state.runtime.read().await;
     let models = rt.storage.list_models(Some(&name)).unwrap_or_default();
     if models.is_empty() {
@@ -585,12 +628,12 @@ fn node_detail(node: &crate::runtime::RuntimeNode) -> NodeDetailResponse {
     }
 }
 
-fn api_error(status: StatusCode, code: &str, message: impl Into<String>) -> axum::response::Response {
-    (
-        status,
-        Json(ApiErrorBody::new(code, message.into())),
-    )
-        .into_response()
+fn api_error(
+    status: StatusCode,
+    code: &str,
+    message: impl Into<String>,
+) -> axum::response::Response {
+    (status, Json(ApiErrorBody::new(code, message.into()))).into_response()
 }
 
 /// Health summary for CLI health command.

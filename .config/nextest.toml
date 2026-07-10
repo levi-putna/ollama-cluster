@@ -1,0 +1,8 @@
+# https://nexte.st/book/configuration
+[profile.default]
+test-threads = "num-cpu"
+failure-output = "immediate-final"
+slow-timeout = { period = "60s", terminate-after = 2 }
+
+[profile.ci]
+retries = { backoff = "fixed", count = 1, delay = "1s" }

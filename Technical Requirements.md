@@ -1,4 +1,4 @@
-# Ollama Cluster — Technical Requirements
+# Ollama Cluster: Technical Requirements
 
 ## 1. Purpose
 
@@ -27,7 +27,7 @@ The initial implementation should prioritise:
 
 # 2. Technology Stack
 
-## TR-001 — Programming language
+## TR-001: Programming language
 
 The primary implementation must use Rust.
 
@@ -41,7 +41,7 @@ Rust should be used for:
 - the optional node agent;
 - shared protocol and domain libraries.
 
-## TR-002 — Rust toolchain
+## TR-002: Rust toolchain
 
 The project must:
 
@@ -53,7 +53,7 @@ The project must:
 - enforce formatting with `rustfmt`;
 - enforce linting with Clippy.
 
-## TR-003 — Recommended libraries
+## TR-003: Recommended libraries
 
 The initial implementation should use:
 
@@ -82,7 +82,7 @@ Alternative libraries may be used where there is a clear technical justification
 
 # 3. Project Structure
 
-## TR-010 — Cargo workspace
+## TR-010: Cargo workspace
 
 The source repository should use a Cargo workspace.
 
@@ -110,7 +110,7 @@ ollama-cluster/
 └── docs/
 ```
 
-## TR-011 — Binary layout
+## TR-011: Binary layout
 
 The initial release should produce the following binaries:
 
@@ -134,7 +134,7 @@ ocluster nodes
 
 The node agent should remain a separate binary because it operates with local host privileges.
 
-## TR-012 — Shared domain layer
+## TR-012: Shared domain layer
 
 Cluster concepts must be defined in a shared core crate.
 
@@ -162,7 +162,7 @@ Shared domain types must not depend directly on:
 
 # 4. Controller Architecture
 
-## TR-020 — Controller responsibilities
+## TR-020: Controller responsibilities
 
 The controller must be the authoritative owner of:
 
@@ -177,7 +177,7 @@ The controller must be the authoritative owner of:
 - runtime configuration;
 - cluster events.
 
-## TR-021 — Internal services
+## TR-021: Internal services
 
 The controller should be divided into internal components:
 
@@ -197,7 +197,7 @@ Controller
 
 Each component must expose explicit interfaces rather than directly mutating shared state.
 
-## TR-022 — Concurrency model
+## TR-022: Concurrency model
 
 The controller must use Tokio for asynchronous execution.
 
@@ -219,7 +219,7 @@ tokio::task::spawn_blocking
 
 or an equivalent dedicated thread pool.
 
-## TR-023 — Internal messaging
+## TR-023: Internal messaging
 
 Internal controller operations should use typed channels.
 
@@ -230,7 +230,7 @@ Recommended channel types:
 - `watch` for current state snapshots;
 - `oneshot` for command responses.
 
-## TR-024 — Failure isolation
+## TR-024: Failure isolation
 
 Failure in one background task must not terminate the entire controller process unless the failure makes safe operation impossible.
 
@@ -240,7 +240,7 @@ Critical background tasks must be supervised and restarted or trigger an orderly
 
 # 5. Network Interfaces
 
-## TR-030 — Separate listeners
+## TR-030: Separate listeners
 
 The controller must support separate listeners for:
 
@@ -261,7 +261,7 @@ listen = "127.0.0.1:11600"
 listen = "127.0.0.1:11601"
 ```
 
-## TR-031 — Unix domain socket
+## TR-031: Unix domain socket
 
 The management interface should support a Unix domain socket.
 
@@ -273,7 +273,7 @@ Default path:
 
 The socket must support filesystem permissions that restrict access to authorised users or groups.
 
-## TR-032 — Remote management
+## TR-032: Remote management
 
 Where remote management is enabled, the management API must support:
 
@@ -284,7 +284,7 @@ Where remote management is enabled, the management API must support:
 - request size limits;
 - audit logging.
 
-## TR-033 — Protocol support
+## TR-033: Protocol support
 
 The inference proxy must support:
 
@@ -300,7 +300,7 @@ HTTP/2 may be supported for client-facing and management interfaces, but Ollama 
 
 # 6. Ollama API Compatibility
 
-## TR-040 — Supported endpoints
+## TR-040: Supported endpoints
 
 The initial inference proxy must support routing for at least:
 
@@ -313,7 +313,7 @@ POST /api/embeddings
 
 Additional Ollama inference endpoints should be supported where they can be routed safely.
 
-## TR-041 — Cluster-managed endpoints
+## TR-041: Cluster-managed endpoints
 
 The controller may provide cluster-level behaviour for:
 
@@ -326,7 +326,7 @@ DELETE /api/delete
 
 Cluster-level responses must be clearly documented because they may aggregate information from multiple nodes rather than mirror a single Ollama instance.
 
-## TR-042 — Request compatibility
+## TR-042: Request compatibility
 
 The proxy must preserve:
 
@@ -337,7 +337,7 @@ The proxy must preserve:
 - Ollama model identifiers;
 - response status codes where appropriate.
 
-## TR-043 — Response compatibility
+## TR-043: Response compatibility
 
 The proxy must avoid modifying Ollama inference responses unless required for compatibility or observability.
 
@@ -351,7 +351,7 @@ X-OCluster-Retry-Count
 
 Cluster headers must not include sensitive internal information unless explicitly enabled.
 
-## TR-044 — Version compatibility
+## TR-044: Version compatibility
 
 The controller must record the Ollama version for each node.
 
@@ -366,13 +366,13 @@ The system should support:
 
 # 7. Streaming Proxy Requirements
 
-## TR-050 — Zero full-response buffering
+## TR-050: Zero full-response buffering
 
 Streaming inference responses must be forwarded incrementally.
 
 The proxy must not load the entire Ollama response into memory before sending it to the client.
 
-## TR-051 — Backpressure
+## TR-051: Backpressure
 
 The proxy must propagate backpressure between:
 
@@ -380,7 +380,7 @@ The proxy must propagate backpressure between:
 - proxy transport;
 - downstream client.
 
-## TR-052 — Cancellation
+## TR-052: Cancellation
 
 When a client disconnects, times out or cancels:
 
@@ -389,7 +389,7 @@ When a client disconnects, times out or cancels:
 - the node concurrency counter must be decremented;
 - the cancellation must not count as a node failure unless the upstream independently failed.
 
-## TR-053 — Retry boundary
+## TR-053: Retry boundary
 
 The proxy must track whether downstream response bytes have been sent.
 
@@ -400,7 +400,7 @@ A request may be retried only when:
 - the retry limit has not been exceeded;
 - another eligible node is available.
 
-## TR-054 — Connection pooling
+## TR-054: Connection pooling
 
 The proxy must maintain reusable upstream connection pools per node.
 
@@ -412,7 +412,7 @@ Pools must support configurable:
 - maximum total connections;
 - keep-alive behaviour.
 
-## TR-055 — Request body handling
+## TR-055: Request body handling
 
 Request bodies may need to be replayed during a retry.
 
@@ -423,7 +423,7 @@ The proxy must therefore either:
 
 Large request bodies must not be buffered without an explicit size limit.
 
-## TR-056 — Streaming detection
+## TR-056: Streaming detection
 
 The proxy must correctly handle both:
 
@@ -434,7 +434,7 @@ The proxy must correctly handle both:
 
 # 8. Request Routing Engine
 
-## TR-060 — Candidate filtering
+## TR-060: Candidate filtering
 
 Before scoring nodes, the routing engine must exclude nodes that are:
 
@@ -447,7 +447,7 @@ Before scoring nodes, the routing engine must exclude nodes that are:
 - missing the requested model;
 - prohibited from serving the requested model.
 
-## TR-061 — Model resolution
+## TR-061: Model resolution
 
 The routing engine must resolve:
 
@@ -464,7 +464,7 @@ production-chat
 llama3.3:70b
 ```
 
-## TR-062 — Routing score
+## TR-062: Routing score
 
 The routing engine must support a configurable weighted score.
 
@@ -495,7 +495,7 @@ score =
 
 Lower scores should represent more desirable nodes.
 
-## TR-063 — Deterministic tie-breaking
+## TR-063: Deterministic tie-breaking
 
 Where nodes have equal scores, the router should use deterministic or fair tie-breaking, such as:
 
@@ -503,7 +503,7 @@ Where nodes have equal scores, the router should use deterministic or fair tie-b
 - stable hash;
 - least recently selected.
 
-## TR-064 — Routing snapshots
+## TR-064: Routing snapshots
 
 Routing decisions should use an immutable or internally consistent snapshot of:
 
@@ -514,7 +514,7 @@ Routing decisions should use an immutable or internally consistent snapshot of:
 
 A request must not observe a partially updated registry.
 
-## TR-065 — Queueing
+## TR-065: Queueing
 
 If cluster-level queueing is enabled, queued requests must be managed through bounded queues.
 
@@ -527,7 +527,7 @@ The queue implementation must enforce:
 - fairness between models;
 - rejection when full.
 
-## TR-066 — Admission control
+## TR-066: Admission control
 
 The router must reject requests before proxying where:
 
@@ -541,7 +541,7 @@ The router must reject requests before proxying where:
 
 # 9. Node Registry
 
-## TR-070 — Node identity
+## TR-070: Node identity
 
 Each node must have:
 
@@ -555,7 +555,7 @@ Each node must have:
 - administrative state;
 - discovered runtime state.
 
-## TR-071 — Node labels
+## TR-071: Node labels
 
 Nodes should support arbitrary key-value labels.
 
@@ -577,7 +577,7 @@ Labels may later be used for:
 - CLI selection;
 - policy enforcement.
 
-## TR-072 — Administrative and runtime state
+## TR-072: Administrative and runtime state
 
 The system must distinguish between:
 
@@ -597,13 +597,13 @@ Runtime state
 
 A runtime recovery must not override a manual administrative disablement.
 
-## TR-073 — Node state persistence
+## TR-073: Node state persistence
 
 Administrative node state must be persisted.
 
 Transient runtime values may be rebuilt after restart.
 
-## TR-074 — Node capability record
+## TR-074: Node capability record
 
 Each node must maintain capabilities including:
 
@@ -619,7 +619,7 @@ Each node must maintain capabilities including:
 
 # 10. Model Registry
 
-## TR-080 — Registry data model
+## TR-080: Registry data model
 
 The model registry must record model-node relationships.
 
@@ -642,7 +642,7 @@ loaded
 last_seen_at
 ```
 
-## TR-081 — Model source states
+## TR-081: Model source states
 
 The registry must keep separate values for:
 
@@ -651,7 +651,7 @@ The registry must keep separate values for:
 - effective models;
 - loaded models.
 
-## TR-082 — Discovery endpoint
+## TR-082: Discovery endpoint
 
 Model discovery must use the Ollama model listing endpoint.
 
@@ -663,7 +663,7 @@ The discovery client must:
 - update the registry atomically;
 - preserve the last known state if discovery fails.
 
-## TR-083 — Inventory fingerprint
+## TR-083: Inventory fingerprint
 
 Each node inventory must have a calculated fingerprint.
 
@@ -678,7 +678,7 @@ modified time
 
 If the fingerprint has not changed, the controller should avoid unnecessary registry updates and events.
 
-## TR-084 — Discovery scheduling
+## TR-084: Discovery scheduling
 
 The discovery scheduler must support:
 
@@ -690,7 +690,7 @@ The discovery scheduler must support:
 - periodic background discovery;
 - jittered scheduling.
 
-## TR-085 — Discovery modes
+## TR-085: Discovery modes
 
 The configuration system must support:
 
@@ -720,7 +720,7 @@ effective = discovered ∩ configured
 effective = configured, subject to runtime readiness validation
 ```
 
-## TR-086 — Configuration drift
+## TR-086: Configuration drift
 
 For static and allow modes, the controller must detect:
 
@@ -741,7 +741,7 @@ Drift must be visible through:
 
 # 11. Health Monitoring
 
-## TR-090 — Passive health tracking
+## TR-090: Passive health tracking
 
 The proxy must report request outcomes to the health manager.
 
@@ -757,13 +757,13 @@ The health manager must classify failures, including:
 - upstream disconnect during streaming;
 - client cancellation.
 
-## TR-091 — Failure classification
+## TR-091: Failure classification
 
 Client cancellations must not be treated as node failures.
 
 Application-level errors such as an invalid model request must not automatically mark the entire node unhealthy.
 
-## TR-092 — Circuit breaker
+## TR-092: Circuit breaker
 
 Each node must have a circuit-breaker state.
 
@@ -781,7 +781,7 @@ Behaviour:
 - `open`: node excluded from routing;
 - `half-open`: limited test traffic or recovery probes allowed.
 
-## TR-093 — Recovery scheduler
+## TR-093: Recovery scheduler
 
 Recovery checks must support:
 
@@ -792,7 +792,7 @@ Recovery checks must support:
 - maximum consecutive attempts before reduced-frequency monitoring;
 - configurable success threshold.
 
-## TR-094 — Recovery readiness
+## TR-094: Recovery readiness
 
 A successful health connection alone must not always return a node to routing.
 
@@ -805,7 +805,7 @@ Recovery may require:
 - node agent reports ready;
 - configured warm-up checks pass.
 
-## TR-095 — Healthy-node checks
+## TR-095: Healthy-node checks
 
 Healthy nodes should be checked infrequently to detect silent failure while idle.
 
@@ -815,7 +815,7 @@ The interval must be configurable and should include jitter.
 
 # 12. Persistence
 
-## TR-100 — Persistent store
+## TR-100: Persistent store
 
 The initial release should use SQLite for local controller persistence.
 
@@ -831,7 +831,7 @@ SQLite should store:
 - schema version;
 - audit records.
 
-## TR-101 — Storage location
+## TR-101: Storage location
 
 Default storage location:
 
@@ -845,7 +845,7 @@ User-mode installations may use:
 ~/.local/share/ocluster/ocluster.db
 ```
 
-## TR-102 — Database migrations
+## TR-102: Database migrations
 
 Database schema changes must use versioned migrations.
 
@@ -856,7 +856,7 @@ The controller must:
 - fail safely if migration cannot complete;
 - avoid starting inference traffic with an invalid schema.
 
-## TR-103 — Transactional updates
+## TR-103: Transactional updates
 
 Updates involving multiple related records must use database transactions.
 
@@ -867,13 +867,13 @@ Examples include:
 - model inventory replacement;
 - administrative state changes.
 
-## TR-104 — Runtime cache
+## TR-104: Runtime cache
 
 The controller may maintain an in-memory registry for routing performance.
 
 Persistent storage must not be queried synchronously for every inference request.
 
-## TR-105 — Event retention
+## TR-105: Event retention
 
 Event retention must be configurable by:
 
@@ -885,7 +885,7 @@ Event retention must be configurable by:
 
 # 13. Configuration
 
-## TR-110 — Configuration format
+## TR-110: Configuration format
 
 The primary configuration format must be TOML.
 
@@ -901,7 +901,7 @@ Default user configuration location:
 ~/.config/ocluster/ocluster.toml
 ```
 
-## TR-111 — Configuration layers
+## TR-111: Configuration layers
 
 Configuration precedence must be:
 
@@ -913,7 +913,7 @@ built-in defaults
 → authorised runtime overrides
 ```
 
-## TR-112 — Environment variables
+## TR-112: Environment variables
 
 Environment variables must use the prefix:
 
@@ -929,7 +929,7 @@ OCLUSTER_LOG_LEVEL
 OCLUSTER_DATABASE_PATH
 ```
 
-## TR-113 — Secrets
+## TR-113: Secrets
 
 Secrets must not be stored in plaintext configuration where avoidable.
 
@@ -942,7 +942,7 @@ The system should support:
 
 CLI output must redact secrets by default.
 
-## TR-114 — Configuration validation
+## TR-114: Configuration validation
 
 Validation must occur:
 
@@ -958,13 +958,13 @@ Validation errors must include:
 - reason;
 - expected value or range.
 
-## TR-115 — Atomic reload
+## TR-115: Atomic reload
 
 Runtime configuration changes must be applied atomically.
 
 If validation or application fails, the previous valid configuration must remain active.
 
-## TR-116 — Configuration schema version
+## TR-116: Configuration schema version
 
 The configuration file should include a schema version.
 
@@ -978,7 +978,7 @@ version = 1
 
 # 14. Management API
 
-## TR-120 — API style
+## TR-120: API style
 
 The management API should use JSON over HTTP.
 
@@ -995,7 +995,7 @@ Example:
 /api/v1/config
 ```
 
-## TR-121 — Management operations
+## TR-121: Management operations
 
 The API must support operations for:
 
@@ -1012,7 +1012,7 @@ The API must support operations for:
 - reading events;
 - validating and applying configuration.
 
-## TR-122 — Long-running operations
+## TR-122: Long-running operations
 
 Long-running operations such as:
 
@@ -1032,7 +1032,7 @@ POST /api/v1/nodes/gpu-01/drain
 GET  /api/v1/operations/{id}
 ```
 
-## TR-123 — Idempotency
+## TR-123: Idempotency
 
 Administrative operations should be idempotent where practical.
 
@@ -1042,7 +1042,7 @@ Examples:
 - disabling a disabled node should succeed;
 - requesting the same model sync repeatedly should not corrupt state.
 
-## TR-124 — API errors
+## TR-124: API errors
 
 Management API errors must use a structured format.
 
@@ -1058,7 +1058,7 @@ Example:
 }
 ```
 
-## TR-125 — API version compatibility
+## TR-125: API version compatibility
 
 The CLI must verify management API compatibility.
 
@@ -1072,7 +1072,7 @@ The controller must expose:
 
 # 15. CLI Requirements
 
-## TR-130 — CLI framework
+## TR-130: CLI framework
 
 The CLI must use structured subcommands.
 
@@ -1089,7 +1089,7 @@ ocluster requests
 ocluster config validate
 ```
 
-## TR-131 — Output formats
+## TR-131: Output formats
 
 Read commands must support:
 
@@ -1105,13 +1105,13 @@ Example:
 ocluster nodes --output json
 ```
 
-## TR-132 — Stable machine output
+## TR-132: Stable machine output
 
 JSON output must use a versioned and stable schema.
 
 Human-readable output may change between releases, but machine-readable output should maintain backward compatibility within a major version.
 
-## TR-133 — Exit codes
+## TR-133: Exit codes
 
 The CLI must use documented exit codes.
 
@@ -1129,7 +1129,7 @@ Recommended codes:
 8  authentication failure
 ```
 
-## TR-134 — Remote contexts
+## TR-134: Remote contexts
 
 The CLI should support named controller contexts.
 
@@ -1153,7 +1153,7 @@ ocluster context list
 ocluster context use production
 ```
 
-## TR-135 — Command confirmation
+## TR-135: Command confirmation
 
 Destructive commands must require confirmation unless one of the following is used:
 
@@ -1163,7 +1163,7 @@ Destructive commands must require confirmation unless one of the following is us
 --non-interactive
 ```
 
-## TR-136 — Shell completion
+## TR-136: Shell completion
 
 The CLI should generate completion scripts for:
 
@@ -1176,17 +1176,17 @@ The CLI should generate completion scripts for:
 
 # 16. Interactive Terminal Interface
 
-## TR-140 — Terminal framework
+## TR-140: Terminal framework
 
 The interactive terminal interface should use Ratatui.
 
-## TR-141 — Data source
+## TR-141: Data source
 
 The TUI must use the management API or shared client library.
 
 It must not directly access internal controller state or the SQLite database.
 
-## TR-142 — Update transport
+## TR-142: Update transport
 
 The initial TUI may use periodic management API refreshes.
 
@@ -1196,7 +1196,7 @@ A later version should support live updates through:
 - WebSocket;
 - streaming HTTP.
 
-## TR-143 — Minimum views
+## TR-143: Minimum views
 
 The TUI should include:
 
@@ -1211,7 +1211,7 @@ The TUI should include:
 - logs;
 - configuration summary.
 
-## TR-144 — Actions
+## TR-144: Actions
 
 TUI actions must call the same management operations as the CLI.
 
@@ -1221,13 +1221,13 @@ No operation should exist only in the TUI.
 
 # 17. Node Agent
 
-## TR-150 — Optional deployment
+## TR-150: Optional deployment
 
 The node agent must be optional.
 
 Core inference routing and model discovery must work without an agent.
 
-## TR-151 — Agent responsibilities
+## TR-151: Agent responsibilities
 
 The agent may provide:
 
@@ -1241,13 +1241,13 @@ The agent may provide:
 - local log access;
 - model change notifications.
 
-## TR-152 — Restricted action model
+## TR-152: Restricted action model
 
 The agent must expose only predefined operations.
 
 It must not provide a generic remote command or shell execution endpoint.
 
-## TR-153 — Local service integration
+## TR-153: Local service integration
 
 On Linux, the agent should support systemd service control.
 
@@ -1259,7 +1259,7 @@ ollama.service
 
 The service name must be configurable.
 
-## TR-154 — Agent authentication
+## TR-154: Agent authentication
 
 Communication between controller and agent must be authenticated and encrypted when crossing a network.
 
@@ -1269,7 +1269,7 @@ Recommended options:
 - signed short-lived tokens;
 - pre-shared credentials for small deployments.
 
-## TR-155 — Agent registration
+## TR-155: Agent registration
 
 Agents must register or be configured with:
 
@@ -1279,7 +1279,7 @@ Agents must register or be configured with:
 - capability list;
 - supported agent version.
 
-## TR-156 — Agent capability negotiation
+## TR-156: Agent capability negotiation
 
 The controller must not assume all agents support all operations.
 
@@ -1298,7 +1298,7 @@ filesystem_watch
 
 # 18. Observability
 
-## TR-160 — Structured logging
+## TR-160: Structured logging
 
 All services must produce structured logs.
 
@@ -1313,14 +1313,14 @@ Logs should include:
 - operation identifier where relevant;
 - error classification.
 
-## TR-161 — Log formats
+## TR-161: Log formats
 
 The system must support:
 
 - human-readable console logs;
 - JSON logs.
 
-## TR-162 — Request correlation
+## TR-162: Request correlation
 
 Every proxied request must receive an internal request identifier.
 
@@ -1331,7 +1331,7 @@ The identifier should be:
 - returned in a response header;
 - propagated to retries.
 
-## TR-163 — Metrics
+## TR-163: Metrics
 
 The controller must expose Prometheus-compatible metrics.
 
@@ -1354,13 +1354,13 @@ ocluster_registry_sync_total
 ocluster_registry_sync_failures_total
 ```
 
-## TR-164 — Metric labels
+## TR-164: Metric labels
 
 Metrics labels must be controlled to avoid unbounded cardinality.
 
 Request identifiers, user identifiers and raw prompts must not be metric labels.
 
-## TR-165 — Health endpoints
+## TR-165: Health endpoints
 
 The controller should expose separate endpoints for:
 
@@ -1377,19 +1377,19 @@ Readiness should indicate that the controller can safely accept inference or man
 
 # 19. Security
 
-## TR-170 — Default network security
+## TR-170: Default network security
 
 The management API must bind to localhost or a Unix socket by default.
 
 Remote management must require explicit configuration.
 
-## TR-171 — TLS
+## TR-171: TLS
 
 Remote management and agent communication must use TLS.
 
 Rustls should be preferred over native OpenSSL dependencies where practical.
 
-## TR-172 — Authentication
+## TR-172: Authentication
 
 The management API must support at least one authentication mechanism before remote access is considered production ready.
 
@@ -1399,7 +1399,7 @@ Possible initial mechanisms:
 - mutual TLS;
 - Unix socket permissions.
 
-## TR-173 — Authorisation
+## TR-173: Authorisation
 
 The design must support future role-based access control.
 
@@ -1412,7 +1412,7 @@ model-admin
 cluster-admin
 ```
 
-## TR-174 — Audit logging
+## TR-174: Audit logging
 
 Administrative actions must create audit records containing:
 
@@ -1423,7 +1423,7 @@ Administrative actions must create audit records containing:
 - outcome;
 - source address where relevant.
 
-## TR-175 — Input validation
+## TR-175: Input validation
 
 All external inputs must be validated, including:
 
@@ -1435,7 +1435,7 @@ All external inputs must be validated, including:
 - timeout values;
 - CLI arguments.
 
-## TR-176 — URL restrictions
+## TR-176: URL restrictions
 
 The controller must protect against server-side request forgery when adding nodes.
 
@@ -1446,13 +1446,13 @@ It should support restrictions such as:
 - blocked loopback or metadata addresses where relevant;
 - explicit allowlists.
 
-## TR-177 — Sensitive request handling
+## TR-177: Sensitive request handling
 
 Prompt and response content must not be logged by default.
 
 Optional content logging must require explicit configuration and display a warning.
 
-## TR-178 — Privilege separation
+## TR-178: Privilege separation
 
 The controller should run as an unprivileged service user.
 
@@ -1462,7 +1462,7 @@ The node agent may require additional permissions, but these must be narrowly sc
 
 # 20. Performance
 
-## TR-180 — Proxy overhead objective
+## TR-180: Proxy overhead objective
 
 The proxy should add minimal latency relative to direct Ollama access.
 
@@ -1479,13 +1479,13 @@ This target excludes:
 - model loading;
 - network latency outside the proxy.
 
-## TR-181 — Streaming latency
+## TR-181: Streaming latency
 
 The proxy must forward the first upstream response bytes without waiting for the full response.
 
 Time-to-first-token overhead should be measured separately from total request duration.
 
-## TR-182 — Concurrency
+## TR-182: Concurrency
 
 The initial controller should support at least:
 
@@ -1495,7 +1495,7 @@ The initial controller should support at least:
 
 on suitable commodity hardware, subject to operating-system limits and benchmark validation.
 
-## TR-183 — Memory limits
+## TR-183: Memory limits
 
 Memory use must be bounded by:
 
@@ -1505,13 +1505,13 @@ Memory use must be bounded by:
 - connection pool limits;
 - log buffering limits.
 
-## TR-184 — No synchronous hot-path storage
+## TR-184: No synchronous hot-path storage
 
 Inference routing must not require synchronous database writes before selecting a node.
 
 Operational storage may be updated asynchronously where safe.
 
-## TR-185 — Benchmark suite
+## TR-185: Benchmark suite
 
 The project should include benchmarks for:
 
@@ -1527,7 +1527,7 @@ The project should include benchmarks for:
 
 # 21. Reliability
 
-## TR-190 — Graceful shutdown
+## TR-190: Graceful shutdown
 
 On shutdown, the controller must:
 
@@ -1538,13 +1538,13 @@ On shutdown, the controller must:
 - persist required state;
 - close listeners cleanly.
 
-## TR-191 — Panic handling
+## TR-191: Panic handling
 
 Recoverable input or upstream failures must not cause panics.
 
 Panics in background tasks must be logged and surfaced through health status.
 
-## TR-192 — State reconstruction
+## TR-192: State reconstruction
 
 After restart, the controller must be able to rebuild transient runtime state by:
 
@@ -1554,11 +1554,11 @@ After restart, the controller must be able to rebuild transient runtime state by
 - rediscovering models;
 - rebuilding the model routing index.
 
-## TR-193 — Partial availability
+## TR-193: Partial availability
 
 The cluster must continue serving models where eligible nodes remain available, even if other nodes or models are unavailable.
 
-## TR-194 — Database failure behaviour
+## TR-194: Database failure behaviour
 
 If the persistent store becomes unavailable:
 
@@ -1571,7 +1571,7 @@ If the persistent store becomes unavailable:
 
 # 22. Deployment
 
-## TR-200 — Systemd packaging
+## TR-200: Systemd packaging
 
 The project must provide systemd units for:
 
@@ -1580,7 +1580,7 @@ ocluster.service
 ocluster-agent.service
 ```
 
-## TR-201 — Service user
+## TR-201: Service user
 
 The controller should run under a dedicated account:
 
@@ -1597,7 +1597,7 @@ Recommended directories:
 /run/ocluster
 ```
 
-## TR-202 — Container image
+## TR-202: Container image
 
 The project should provide a container image for the controller.
 
@@ -1609,11 +1609,11 @@ The image should:
 - include health checks;
 - use a minimal runtime base image.
 
-## TR-203 — Static binaries
+## TR-203: Static binaries
 
 Where practical, release builds should provide self-contained Linux binaries.
 
-## TR-204 — Supported platforms
+## TR-204: Supported platforms
 
 The initial supported controller platform should be:
 
@@ -1636,7 +1636,7 @@ The node agent should initially target Linux hosts running Ollama as a service.
 
 # 23. Testing
 
-## TR-210 — Unit testing
+## TR-210: Unit testing
 
 Unit tests must cover:
 
@@ -1649,7 +1649,7 @@ Unit tests must cover:
 - inventory fingerprinting;
 - circuit-breaker behaviour.
 
-## TR-211 — Integration testing
+## TR-211: Integration testing
 
 Integration tests must cover:
 
@@ -1663,7 +1663,7 @@ Integration tests must cover:
 - configuration reload;
 - management API operations.
 
-## TR-212 — Mock Ollama server
+## TR-212: Mock Ollama server
 
 The test suite should include a configurable mock Ollama server capable of simulating:
 
@@ -1676,7 +1676,7 @@ The test suite should include a configurable mock Ollama server capable of simul
 - model inventory changes;
 - mid-stream disconnects.
 
-## TR-213 — End-to-end testing
+## TR-213: End-to-end testing
 
 End-to-end tests should run:
 
@@ -1688,7 +1688,7 @@ CLI
 → Ollama or mock Ollama
 ```
 
-## TR-214 — Failure testing
+## TR-214: Failure testing
 
 The test suite must include scenarios for:
 
@@ -1701,7 +1701,7 @@ The test suite must include scenarios for:
 - all nodes for a model becoming unavailable;
 - client disconnect during generation.
 
-## TR-215 — Load testing
+## TR-215: Load testing
 
 Load tests should measure:
 
@@ -1717,7 +1717,7 @@ Load tests should measure:
 
 # 24. Continuous Integration and Release
 
-## TR-220 — CI checks
+## TR-220: CI checks
 
 Every pull request must run:
 
@@ -1730,7 +1730,7 @@ dependency audit
 licence checks
 ```
 
-## TR-221 — Security scanning
+## TR-221: Security scanning
 
 The project should use:
 
@@ -1739,7 +1739,7 @@ The project should use:
 - container scanning;
 - secret scanning.
 
-## TR-222 — Release artefacts
+## TR-222: Release artefacts
 
 Releases should include:
 
@@ -1752,7 +1752,7 @@ Releases should include:
 - migration notes;
 - changelog.
 
-## TR-223 — Versioning
+## TR-223: Versioning
 
 The project should use semantic versioning.
 

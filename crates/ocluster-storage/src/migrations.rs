@@ -13,16 +13,17 @@ pub fn migrate(conn: &Connection) -> Result<(), StorageError> {
     )?;
 
     let version: i32 = conn
-        .query_row(
-            "SELECT version FROM schema_version LIMIT 1",
-            [],
-            |row| row.get(0),
-        )
+        .query_row("SELECT version FROM schema_version LIMIT 1", [], |row| {
+            row.get(0)
+        })
         .unwrap_or(0);
 
     if version == 0 {
         apply_v1(conn)?;
-        conn.execute("INSERT INTO schema_version (version) VALUES (?1)", [CURRENT_SCHEMA_VERSION])?;
+        conn.execute(
+            "INSERT INTO schema_version (version) VALUES (?1)",
+            [CURRENT_SCHEMA_VERSION],
+        )?;
     } else if version != CURRENT_SCHEMA_VERSION {
         return Err(StorageError::Migration(format!(
             "unsupported schema version {version}"

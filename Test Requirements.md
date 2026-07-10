@@ -1,4 +1,4 @@
-# Ollama Cluster — Test Requirements
+# Ollama Cluster: Test Requirements
 
 ## 1. Purpose
 
@@ -6,8 +6,8 @@ This document defines the test requirements for Ollama Cluster (`ocluster`).
 
 It is derived from:
 
-- [Functional Requirements.md](./Functional%20Requirements.md) — functional behaviour and user-facing capabilities;
-- [Technical Requirements.md](./Technical%20Requirements.md) — implementation constraints, architecture, and quality attributes.
+- [Functional Requirements.md](./Functional%20Requirements.md): functional behaviour and user-facing capabilities;
+- [Technical Requirements.md](./Technical%20Requirements.md): implementation constraints, architecture, and quality attributes.
 
 The purpose is to provide a single, traceable basis for:
 
@@ -60,13 +60,13 @@ Deferred features must not block initial release acceptance unless explicitly pr
 
 ## 3. Test Principles
 
-### TXR-001 — Requirement traceability
+### TXR-001: Requirement traceability
 
 Every test case must reference at least one FR or TR identifier.
 
 Coverage reports should demonstrate that all in-scope FR and TR identifiers have associated tests before release.
 
-### TXR-002 — Test pyramid
+### TXR-002: Test pyramid
 
 Testing must follow a layered approach:
 
@@ -78,19 +78,19 @@ Testing must follow a layered approach:
 | Failure / chaos | Resilience under adverse conditions | Controlled fault injection |
 | Load / performance | Throughput, latency, resource use | Benchmark harness, load generator |
 
-### TXR-003 — Deterministic tests
+### TXR-003: Deterministic tests
 
 Tests must be repeatable in CI without external network dependencies.
 
 Non-deterministic timing must use configurable timeouts, polling with bounded retries, or injected clocks where practical.
 
-### TXR-004 — Isolation
+### TXR-004: Isolation
 
 Each integration and end-to-end test must use isolated temporary directories for configuration and SQLite databases.
 
 Tests must not depend on a pre-existing cluster installation on the host.
 
-### TXR-005 — Fail-fast diagnostics
+### TXR-005: Fail-fast diagnostics
 
 Failed tests must emit sufficient context to diagnose the failure without re-running interactively, including:
 
@@ -99,7 +99,7 @@ Failed tests must emit sufficient context to diagnose the failure without re-run
 - relevant controller log excerpts;
 - node and model state at failure time.
 
-### TXR-006 — Security-sensitive assertions
+### TXR-006: Security-sensitive assertions
 
 Tests must verify that prompts, completions, and secrets are not written to logs or metrics by default (FR-083, TR-113, TR-177).
 
@@ -107,7 +107,7 @@ Tests must verify that prompts, completions, and secrets are not written to logs
 
 ## 4. Test Infrastructure
 
-### TXR-010 — Mock Ollama server
+### TXR-010: Mock Ollama server
 
 The test suite must include a configurable mock Ollama server (TR-212) capable of simulating:
 
@@ -124,7 +124,7 @@ The test suite must include a configurable mock Ollama server (TR-212) capable o
 
 The mock must support running multiple independent instances on ephemeral ports to represent a multi-node cluster.
 
-### TXR-011 — Test fixtures
+### TXR-011: Test fixtures
 
 The repository must provide reusable fixtures for:
 
@@ -135,7 +135,7 @@ The repository must provide reusable fixtures for:
 
 Fixtures must live under `tests/fixtures/` or an equivalent documented location.
 
-### TXR-012 — Test harness utilities
+### TXR-012: Test harness utilities
 
 Shared test utilities must provide helpers to:
 
@@ -145,7 +145,7 @@ Shared test utilities must provide helpers to:
 - poll until a node reaches an expected state or a timeout elapses;
 - capture and parse structured logs and Prometheus metrics.
 
-### TXR-013 — CI environment
+### TXR-013: CI environment
 
 Continuous integration must run the full automated test suite on every pull request (TR-220):
 
@@ -164,7 +164,7 @@ CI must complete without warnings treated as errors and without flaky test failu
 
 ## 5. Test Levels and Coverage
 
-### TXR-020 — Unit tests
+### TXR-020: Unit tests
 
 Unit tests must cover (TR-210):
 
@@ -181,7 +181,7 @@ Unit tests must cover (TR-210):
 
 Unit tests must not require network I/O or SQLite unless testing the persistence layer in isolation with an in-memory database.
 
-### TXR-021 — Integration tests
+### TXR-021: Integration tests
 
 Integration tests must cover (TR-211):
 
@@ -197,7 +197,7 @@ Integration tests must cover (TR-211):
 | Configuration reload | FR-115, TR-115 | Valid reload applies atomically; invalid reload retains previous config |
 | Management API | TR-120–TR-125 | CRUD operations for nodes, models, requests, events, config |
 
-### TXR-022 — End-to-end tests
+### TXR-022: End-to-end tests
 
 End-to-end tests must exercise the full path (TR-213):
 
@@ -217,7 +217,7 @@ Minimum end-to-end scenarios:
 8. `ocluster config validate` and `ocluster config reload` via CLI.
 9. Machine-readable output: `ocluster status --output json` parses against documented schema.
 
-### TXR-023 — Failure tests
+### TXR-023: Failure tests
 
 Failure tests must cover (TR-214):
 
@@ -232,7 +232,7 @@ Failure tests must cover (TR-214):
 | All nodes for model unavailable | Queue or service-unavailable response per configuration (FR-065) |
 | Client disconnect during generation | Upstream cancelled; node not penalised (TR-091) |
 
-### TXR-024 — Load and performance tests
+### TXR-024: Load and performance tests
 
 Load tests should measure (TR-215, TR-180–TR-183):
 
@@ -253,7 +253,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ### 6.1 Cluster initialisation
 
-#### TXR-100 — Initialise cluster (FR-001, FR-002, FR-003)
+#### TXR-100: Initialise cluster (FR-001, FR-002, FR-003)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -267,7 +267,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ### 6.2 Node registration and management
 
-#### TXR-110 — Node lifecycle (FR-010–FR-017, FR-011)
+#### TXR-110: Node lifecycle (FR-010–FR-017, FR-011)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -283,7 +283,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 | TXR-110-10 | `ocluster node inspect` | Output includes name, address, version, state, models, concurrency, latency fields |
 | TXR-110-11 | SSRF protection on node URL (TR-176) | Blocked loopback/metadata URLs when restrictions enabled |
 
-#### TXR-111 — Node state persistence (FR-020–FR-022, TR-072–TR-073)
+#### TXR-111: Node state persistence (FR-020–FR-022, TR-072–TR-073)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -293,7 +293,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ### 6.3 Health monitoring and recovery
 
-#### TXR-120 — Health and recovery (FR-030–FR-036, TR-090–TR-095)
+#### TXR-120: Health and recovery (FR-030–FR-036, TR-090–TR-095)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -309,7 +309,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ### 6.4 Model discovery and registry
 
-#### TXR-130 — Discovery and registry (FR-040–FR-049, TR-080–TR-086)
+#### TXR-130: Discovery and registry (FR-040–FR-049, TR-080–TR-086)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -328,7 +328,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 | TXR-130-13 | Configuration drift detection | Visible in health, inspect, and events (TR-086) |
 | TXR-130-14 | Cluster model index | `ocluster models` and `ocluster model inspect` show per-node readiness and loaded state |
 
-#### TXR-131 — Model aliases and restrictions (FR-054–FR-055, TR-061)
+#### TXR-131: Model aliases and restrictions (FR-054–FR-055, TR-061)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -338,7 +338,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ### 6.5 Request routing
 
-#### TXR-140 — Routing engine (FR-060–FR-067, TR-060–TR-066)
+#### TXR-140: Routing engine (FR-060–FR-067, TR-060–TR-066)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -347,8 +347,8 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 | TXR-140-03 | Loaded-model preference | Prefer node with model loaded unless another is significantly less busy |
 | TXR-140-04 | Per-node concurrency limit | Excess requests queued or rejected per config |
 | TXR-140-05 | Per-node queue limit | Bounded queue enforced |
-| TXR-140-06 | No eligible node — queue mode | Request queued up to depth and wait time |
-| TXR-140-07 | No eligible node — reject mode | Clear service-unavailable response |
+| TXR-140-06 | No eligible node: queue mode | Request queued up to depth and wait time |
+| TXR-140-07 | No eligible node: reject mode | Clear service-unavailable response |
 | TXR-140-08 | `ocluster explain <model>` | Eligible nodes, rejections with reasons, scores, preferred node |
 | TXR-140-09 | Deterministic tie-breaking | Equal-score nodes handled fairly across repeated requests (TR-063) |
 | TXR-140-10 | Routing snapshot consistency | Decision not based on partially updated registry (TR-064) |
@@ -357,7 +357,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ### 6.6 Proxy and streaming
 
-#### TXR-150 — Proxy behaviour (FR-070–FR-077, TR-040–TR-056)
+#### TXR-150: Proxy behaviour (FR-070–FR-077, TR-040–TR-056)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -376,7 +376,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ### 6.7 Request monitoring
 
-#### TXR-160 — Request visibility (FR-080–FR-083, TR-162)
+#### TXR-160: Request visibility (FR-080–FR-083, TR-162)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -388,7 +388,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ### 6.8 Cluster status and visibility
 
-#### TXR-170 — Status commands (FR-090–FR-093)
+#### TXR-170: Status commands (FR-090–FR-093)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -400,7 +400,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ### 6.9 Configuration management
 
-#### TXR-180 — Configuration (FR-110–FR-116, TR-110–TR-116)
+#### TXR-180: Configuration (FR-110–FR-116, TR-110–TR-116)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -415,7 +415,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ### 6.10 Logging and metrics
 
-#### TXR-190 — Observability (FR-120–FR-124, TR-160–TR-165)
+#### TXR-190: Observability (FR-120–FR-124, TR-160–TR-165)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -429,7 +429,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ### 6.11 Service management
 
-#### TXR-200 — Service lifecycle (FR-130–FR-132, TR-190, TR-200)
+#### TXR-200: Service lifecycle (FR-130–FR-132, TR-190, TR-200)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -441,7 +441,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ### 6.12 Security and access control
 
-#### TXR-210 — Security (FR-140–FR-144, TR-170–TR-178)
+#### TXR-210: Security (FR-140–FR-144, TR-170–TR-178)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -455,7 +455,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ### 6.13 Persistence and recovery
 
-#### TXR-220 — Persistence (FR-150–FR-151, TR-100–TR-104)
+#### TXR-220: Persistence (FR-150–FR-151, TR-100–TR-104)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -468,7 +468,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ### 6.14 CLI output and automation
 
-#### TXR-230 — CLI behaviour (FR-160–FR-163, TR-130–TR-136)
+#### TXR-230: CLI behaviour (FR-160–FR-163, TR-130–TR-136)
 
 | ID | Scenario | Expected result |
 | -- | -------- | --------------- |
@@ -485,7 +485,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 
 ## 7. Non-Functional Test Requirements
 
-### TXR-300 — Performance
+### TXR-300: Performance
 
 | ID | Requirement | Acceptance criteria |
 | -- | ----------- | ------------------- |
@@ -494,7 +494,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 | TXR-300-03 | Declared concurrency (TR-182) | Controller handles configured concurrent streams without deadlock or unbounded memory |
 | TXR-300-04 | Memory limits (TR-183) | No unbounded growth during 30-minute sustained load test |
 
-### TXR-310 — Reliability
+### TXR-310: Reliability
 
 | ID | Requirement | Acceptance criteria |
 | -- | ----------- | ------------------- |
@@ -502,7 +502,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 | TXR-310-02 | Database failure (TR-194) | Controller enters safe degraded state; does not corrupt data |
 | TXR-310-03 | Failure isolation (TR-024) | Fault in one internal component does not terminate unrelated subsystems |
 
-### TXR-320 — Compatibility
+### TXR-320: Compatibility
 
 | ID | Requirement | Acceptance criteria |
 | -- | ----------- | ------------------- |
@@ -510,7 +510,7 @@ Performance tests may run outside the default PR pipeline but must run on a sche
 | TXR-320-02 | Static binary smoke test (TR-203) | Release binary starts and serves health endpoint |
 | TXR-320-03 | Container image smoke test (TR-202) | Image starts controller with sample config |
 
-### TXR-330 — Packaging
+### TXR-330: Packaging
 
 | ID | Requirement | Acceptance criteria |
 | -- | ----------- | ------------------- |
@@ -537,14 +537,14 @@ When deferred features are implemented, the following test groups must be added 
 
 The initial release is acceptable for tagging when all of the following are true:
 
-1. **Coverage** — Every in-scope FR and TR identifier in §2.1 has at least one mapped test case.
-2. **Automation** — All TXR-020 through TXR-024 blocking tests pass in CI on every merge to the release branch.
-3. **No critical defects** — No open defects classified as critical or high against in-scope requirements.
-4. **MVP scenarios** — All TXR-100 through TXR-230 scenarios marked as MVP pass.
-5. **Performance baseline** — TXR-300-01 and TXR-300-02 meet targets on reference hardware documented in the test report.
-6. **Security baseline** — TXR-210-01 through TXR-210-06 pass.
-7. **Recovery** — TXR-220-06 and TXR-023 controller-restart scenario pass.
-8. **Documentation** — Test report includes environment, seed versions, and known limitations.
+1. **Coverage**: Every in-scope FR and TR identifier in §2.1 has at least one mapped test case.
+2. **Automation**: All TXR-020 through TXR-024 blocking tests pass in CI on every merge to the release branch.
+3. **No critical defects**: No open defects classified as critical or high against in-scope requirements.
+4. **MVP scenarios**: All TXR-100 through TXR-230 scenarios marked as MVP pass.
+5. **Performance baseline**: TXR-300-01 and TXR-300-02 meet targets on reference hardware documented in the test report.
+6. **Security baseline**: TXR-210-01 through TXR-210-06 pass.
+7. **Recovery**: TXR-220-06 and TXR-023 controller-restart scenario pass.
+8. **Documentation**: Test report includes environment, seed versions, and known limitations.
 
 ---
 
@@ -572,7 +572,7 @@ Minimum coverage targets for initial release:
 
 ## 11. Test Reporting
 
-### TXR-500 — Test execution report
+### TXR-500: Test execution report
 
 Each release candidate must produce a test report containing:
 
@@ -584,7 +584,7 @@ Each release candidate must produce a test report containing:
 - known failures and waivers;
 - coverage summary against traceability matrix.
 
-### TXR-501 — Defect severity definitions
+### TXR-501: Defect severity definitions
 
 | Severity | Definition |
 | -------- | ---------- |

@@ -5,8 +5,8 @@ use std::time::Instant;
 use chrono::{DateTime, Utc};
 use ocluster_config::ClusterConfig;
 use ocluster_core::{
-    circuit_breaker::CircuitBreaker, effective_models, NodeRuntimeState,
-    RoutingConfig, RoutingSnapshot,
+    circuit_breaker::CircuitBreaker, effective_models, NodeRuntimeState, RoutingConfig,
+    RoutingSnapshot,
 };
 use ocluster_storage::{NodeRecord, Storage, StoredModel};
 use uuid::Uuid;
@@ -232,8 +232,7 @@ impl ClusterRuntime {
             node.record.inventory_fingerprint = fingerprint;
             node.record.runtime_state = NodeRuntimeState::Ready;
             self.storage.upsert_node(&node.record.clone())?;
-            self.storage
-                .replace_node_models(&node.record.id, &models)?;
+            self.storage.replace_node_models(&node.record.id, &models)?;
         }
         Ok(())
     }

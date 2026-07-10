@@ -97,7 +97,11 @@ fn draw_overview(frame: &mut Frame, app: &App, area: Rect) {
     };
 
     let paragraph = Paragraph::new(text)
-        .block(Block::default().borders(Borders::ALL).title(" Cluster overview "))
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .title(" Cluster overview "),
+        )
         .wrap(Wrap { trim: true });
 
     frame.render_widget(paragraph, area);
@@ -131,14 +135,17 @@ fn draw_nodes(frame: &mut Frame, app: &App, area: Rect) {
         })
         .collect();
 
-    let table = Table::new(rows, [
-        Constraint::Length(14),
-        Constraint::Length(12),
-        Constraint::Length(14),
-        Constraint::Min(20),
-        Constraint::Length(8),
-        Constraint::Length(8),
-    ])
+    let table = Table::new(
+        rows,
+        [
+            Constraint::Length(14),
+            Constraint::Length(12),
+            Constraint::Length(14),
+            Constraint::Min(20),
+            Constraint::Length(8),
+            Constraint::Length(8),
+        ],
+    )
     .header(header)
     .block(
         Block::default()
@@ -205,12 +212,15 @@ fn draw_models(frame: &mut Frame, app: &App, area: Rect) {
         })
         .collect();
 
-    let table = Table::new(rows, [
-        Constraint::Min(30),
-        Constraint::Length(8),
-        Constraint::Length(8),
-        Constraint::Length(8),
-    ])
+    let table = Table::new(
+        rows,
+        [
+            Constraint::Min(30),
+            Constraint::Length(8),
+            Constraint::Length(8),
+            Constraint::Length(8),
+        ],
+    )
     .header(header)
     .block(Block::default().borders(Borders::ALL).title(" Models "));
 
@@ -244,15 +254,22 @@ fn draw_requests(frame: &mut Frame, app: &App, area: Rect) {
         })
         .collect();
 
-    let table = Table::new(rows, [
-        Constraint::Length(14),
-        Constraint::Min(20),
-        Constraint::Length(14),
-        Constraint::Length(12),
-        Constraint::Length(10),
-    ])
+    let table = Table::new(
+        rows,
+        [
+            Constraint::Length(14),
+            Constraint::Min(20),
+            Constraint::Length(14),
+            Constraint::Length(12),
+            Constraint::Length(10),
+        ],
+    )
     .header(header)
-    .block(Block::default().borders(Borders::ALL).title(" Active requests "));
+    .block(
+        Block::default()
+            .borders(Borders::ALL)
+            .title(" Active requests "),
+    );
 
     frame.render_widget(table, area);
 }

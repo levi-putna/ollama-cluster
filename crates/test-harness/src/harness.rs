@@ -3,7 +3,7 @@ use std::process::{Child, Command, Stdio};
 use std::time::{Duration, Instant};
 
 use mock_ollama::{MockConfig, MockOllama};
-use ocluster_config::{init_config, defaults::default_config, types::NodeConfig};
+use ocluster_config::{defaults::default_config, init_config, types::NodeConfig};
 use ocluster_core::ModelMode;
 use tempfile::TempDir;
 
@@ -64,8 +64,7 @@ impl TestCluster {
         let management_url = format!("http://{}", cluster_config.management.listen);
         let inference_url = format!("http://{}", cluster_config.inference.listen);
 
-        let binary = std::env::var("CARGO_BIN_EXE_ocluster")
-            .unwrap_or_else(|_| "ocluster".into());
+        let binary = std::env::var("CARGO_BIN_EXE_ocluster").unwrap_or_else(|_| "ocluster".into());
         let controller = Command::new(binary)
             .arg("serve")
             .arg("--config")
@@ -75,17 +74,14 @@ impl TestCluster {
             .spawn()
             .expect("failed to spawn ocluster serve");
 
-        poll_until(
-            Duration::from_secs(15),
-            || async {
-                reqwest::Client::new()
-                    .get(format!("{management_url}/health/live"))
-                    .send()
-                    .await
-                    .map(|r| r.status().is_success())
-                    .unwrap_or(false)
-            },
-        )
+        poll_until(Duration::from_secs(15), || async {
+            reqwest::Client::new()
+                .get(format!("{management_url}/health/live"))
+                .send()
+                .await
+                .map(|r| r.status().is_success())
+                .unwrap_or(false)
+        })
         .await
         .expect("controller did not become ready");
 

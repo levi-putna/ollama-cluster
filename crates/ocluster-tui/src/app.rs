@@ -3,7 +3,9 @@ use std::time::{Duration, Instant};
 
 use anyhow::{Context, Result};
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers};
-use crossterm::terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
+use crossterm::terminal::{
+    disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen,
+};
 use crossterm::ExecutableCommand;
 use ocluster_client::ManagementClient;
 use ocluster_protocol::{
@@ -119,10 +121,7 @@ impl App {
     /// Move tab selection forward or backward.
     pub fn next_screen(&mut self, forward: bool) {
         let screens = Screen::all();
-        let current = screens
-            .iter()
-            .position(|s| *s == self.screen)
-            .unwrap_or(0);
+        let current = screens.iter().position(|s| *s == self.screen).unwrap_or(0);
         let next = if forward {
             (current + 1) % screens.len()
         } else {
@@ -215,7 +214,9 @@ impl App {
 
     fn queue_action(&mut self, action: PendingAction) {
         let empty = match &action {
-            PendingAction::DisableNode { name } | PendingAction::DrainNode { name } => name.is_empty(),
+            PendingAction::DisableNode { name } | PendingAction::DrainNode { name } => {
+                name.is_empty()
+            }
         };
         if empty {
             return;
@@ -233,8 +234,8 @@ pub fn run_dashboard(endpoint: &str) -> Result<()> {
     stdout()
         .execute(EnterAlternateScreen)
         .context("failed to enter alternate screen")?;
-    let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))
-        .context("failed to create terminal")?;
+    let mut terminal =
+        Terminal::new(CrosstermBackend::new(stdout())).context("failed to create terminal")?;
 
     let mut app = App::new();
     let result = run_loop(&mut terminal, &rt, &client, &mut app);

@@ -14,9 +14,9 @@ pub use fingerprint::inventory_fingerprint;
 pub use model_mode::{effective_models, ModelMode};
 pub use retry::{classify_error, RetryPolicy, RetryableError};
 pub use routing::{
-    explain_routing, filter_candidates, score_node, select_node, RoutingCandidate,
-    RoutingConfig, RoutingExplanation, RoutingPolicy, RoutingSnapshot,
+    explain_routing, filter_candidates, score_node, select_node, RoutingCandidate, RoutingConfig,
+    RoutingExplanation, RoutingPolicy, RoutingSnapshot,
 };
 pub use state::{
-    AdminState, NodeRuntimeState, RuntimeStateTransition, validate_runtime_transition,
+    validate_runtime_transition, AdminState, NodeRuntimeState, RuntimeStateTransition,
 };
